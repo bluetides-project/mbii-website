@@ -1,0 +1,18 @@
+% for gid, sub in zip(id, subhalos):
+    <h2> Subhalo: {{gid}} </h2>
+    <ul>
+    <li>Group: {{sub['groupid'] }} </li> 
+    <li>IsCentral: {{sub['iscentral'] }} </li> 
+    <li>Mass: {{sub['mass'] }} </li> 
+    <li>Gas : {{sub['gasmass'] }} </li> 
+    <li>Dark Matter : {{sub['darkmass'] }} </li> 
+    <li>Star: {{sub['starmass'] }} </li> 
+    <li>Blackhole: {{sub['bhmass'] }} </li> 
+    <li>Rcirc: {{sub['rcirc'] }} </li> 
+    <li>X: {{sub['x'] }} </li>
+    <li>Y: {{sub['y'] }} </li>
+    <li>SDSS.i: {{sub['SDSS.i'] }} </li>
+    <li>SDDD.r: {{sub['SDSS.r'] }} </li>
+    <li>SDDD.g: {{sub['SDSS.g'] }} </li>
+    </ul>
+% end

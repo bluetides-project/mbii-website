@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Universe</title>
+   <link href="lib/css/ui-lightness/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+   <style type="text/css">
+      body {
+         margin: 0;
+         padding: 0;
+         font-family: Verdana, Helvetica, Arial, sans-serif;
+      }
+
+      .overlayPanel {
+         display: none;
+         position: absolute;
+         border: 1px solid black;
+         padding: 15px;
+         background-color: rgba(255, 255, 255, .3);
+         margin: 4px;
+         color: black;
+         z-index: 1000;
+      }
+
+      #controlPanel {
+         color: #fff;
+         display: inline;
+         top: 5px;
+         right: 5px;
+         width: auto;
+         height: auto;
+      }
+
+      #interestPointInfo {
+         display: inline;
+         top: 5px;
+         left: 5px;
+         width: 450px;
+         height: auto;
+         font-family: monospace;
+      }
+      #interestPointInfo ul {
+         list-style-type: none;
+      }
+      #interestPointInfo li {
+         list-style-type: none;
+      }
+
+      #gigapanViewer {
+         position: absolute;
+         top: 0;
+         bottom: 0;
+         left: 0;
+         right: 0;
+         margin: 0;
+         padding: 0;
+         background-color: black;
+      }
+
+      .interestPoint {
+         cursor: pointer;
+         width: 24px;
+         height: 24px;
+         background: url('images/galaxy.png') no-repeat;
+      }
+      .interestPoint.Active {
+         cursor: pointer;
+         width: 24px;
+         height: 24px;
+         background: url('images/galaxy_active.png') no-repeat;
+      }
+
+      .interestPoint.Central {
+         cursor: pointer;
+         width: 24px;
+         height: 24px;
+         background: url('images/central_galaxy.png') no-repeat;
+      }
+      .interestPoint.Central.Active {
+         cursor: pointer;
+         width: 24px;
+         height: 24px;
+         background: url('images/central_galaxy_active.png') no-repeat;
+      }
+
+      #interestPointDescription {
+         font-size: 12pt;
+      }
+
+      #interestPointOverlayCloseButton {
+         font-weight: bold;
+         width: 15px;
+         height: 15px;
+         line-height: 15px;
+         text-align: center;
+         border: 1px solid black;
+         float: right;
+         cursor: pointer;
+      }
+   </style>
+   <script language="JavaScript" type="text/javascript"
+       src="datasource.js"></script>
+   <script language="JavaScript" type="text/javascript" src="lib/jquery/jquery-1.10.2.js"></script>
+   <script language="JavaScript" type="text/javascript" src="lib/jquery/jquery-ui-1.10.3.js"></script>
+   <script language="JavaScript" type="text/javascript" src="lib/seadragon/seadragon.js"></script>
+   <script language="JavaScript" type="text/javascript" src="lib/org/gigapan/seadragon/GigapanTileSource.js"></script>
+   <script language="JavaScript" type="text/javascript" src="lib/org/gigapan/seadragon/SeadragonUtils.js"></script>
+   <script language="JavaScript" type="text/javascript" src="lib/sprintf.js"></script>
+   <script language="JavaScript" type="text/javascript" src="lib/mbiibrowser.js"></script>
+   <script language="JavaScript" type="text/javascript"> 
+    var mlg;
+    var mlt;    
+
+    var MassMin = 0.1;
+    var Nmax = 100;
+    var tags = [];
+    var currentSnapId = snapshots[0].snapid;
+
+    function currentSnapshot() {
+        var control = $("#snapshotSlider");
+        return snapshots[parseInt(control.val())];
+    }
+
+    function selectInterestPoint(mlt, index) {
+        //$("#interestPointOverlayCloseButton").click();
+        var id = mlt.getAttr("id", index);
+        viewObject(id, "subhalo",
+            function() {
+                highlightObjects(id, "subhalo");
+            }
+        );
+    }
+
+    function highlightObjects(selid, objtype) {
+        var i;
+        var content;
+        var id;
+        for(i = 0; i < mlt.length; i ++) {
+            content = mlt.getAttr("content", i);
+            id = mlt.getAttr("id", i);
+            if((id == selid && objtype == "subhalo") ||
+                (content.groupid == selid && objtype == "group")
+            ) {
+                mlt.getElement(i).addClass("Active");
+            } else {
+                mlt.getElement(i).removeClass("Active");
+            }
+        }
+    }
+
+    function deactivateAll() {
+        var i;
+        var content;
+        for(i = 0; i < mlt.length; i ++) {
+            content = mlt.getAttr("content", index);
+            mlt.getElement(i).removeClass("Active");
+        }
+    }
+
+    function viewObject(id, objtype, viewswitched) {
+        mbiibrowser.AjaxLoadObject("html", objtype, currentSnapshot().snapid, id,
+            function(data) {
+                $("#interestPointDescription").html(data);
+                $("#interestPointInfo").show();
+            }
+        );
+        $("#interestPointOverlayCloseButton").bind("click",
+            function() {
+                $("#interestPointInfo").hide();
+                $("#interestPointOverlayCloseButton").unbind("click");
+            }
+        );
+
+        mbiibrowser.AjaxLoadObject("json", objtype, currentSnapshot().snapid, id,
+            function(data) {
+                console.log(data[0].bounds);
+                mlg.view(data[0].bounds);
+                if(viewswitched) viewswitched();
+            }
+        );
+    }
+
+    function jumptoGroup() {
+        var control = $("#GroupID");
+        var id = parseInt(control.val());
+        viewObject(id, 'group',
+            function() {
+                redoSearch(function() { highlightObjects(id, 'group');});
+            }
+        );
+    }
+    
+    function changeSnapshot() {
+        var control = $("#snapshotSlider");
+        var title = $("#snapshotTitle");
+        var snapshot = currentSnapshot()
+        mlg.reopen(snapshot.layers, function() {
+            title.html(snapshot.snapid);
+            window.setTimeout(changeLayer);
+            window.setTimeout(redoSearch);
+        });
+    }
+
+    function changeLayer () {
+        var control = $("#snapshotLayerSlider");
+        var title = $("#snapshotLayerTitle");
+        var sel = parseInt(control.val());
+        console.log("change to layer " + sel);
+        mlg.switchLayer(sel);
+        var snapshot = currentSnapshot();
+        title.html(snapshot.layers[mlg.currentLayer].type);
+    }
+
+    function changeCut() {
+        console.log("change to Nmax " + Nmax);
+        console.log("change to MassMin " + MassMin);
+        var Nmaxtitle = $("#NmaxTitle");
+        Nmaxtitle.html("" + Nmax);
+        var MassMinTitle = $("#MassMinTitle");
+        MassMinTitle.html("" + MassMin);
+
+        var i;
+        for(i = 0; i < tags.length && i < Nmax; i ++) {
+            if (tags[i].content.mass < MassMin) break;
+        }
+        mlt.setDesc(tags.slice(0, i));
+        console.log(tags.slice(0, i));
+        mlg.drawTags();
+    }
+
+    function redoSearch(callback) {
+        mlg.saveBounds();
+        var snapshot = currentSnapshot();
+        mbiibrowser.AjaxLoadTags(
+            snapshot.snapid,
+            mlg.bounds,
+            500, 0.1, function(newtags) {
+                tags = newtags;
+                changeCut();
+                if(callback) callback();
+            }
+        );
+    }
+    $(document).ready(function() {
+
+        /* do not use 'change' event: it is not always properly emitted */
+        $("#snapshotSlider").prop("max", snapshots.length - 1)
+                .click(function() {
+                    window.setTimeout(changeSnapshot);
+                });
+        $("#snapshotLayerSlider")
+                .click(function() {
+                    window.setTimeout(changeLayer);
+                });
+        $("#NmaxSlider")
+                .click(function() {
+                    Nmax = parseInt($("#NmaxSlider").val());
+                    window.setTimeout(changeCut);
+                });
+
+        $("#MassMinSlider")
+                .click(function() {
+                    MassMin = Math.pow(10, parseFloat($("#MassMinSlider").val()) - 10);
+                    console.log(MassMin)
+                    window.setTimeout(changeCut);
+                });
+
+
+        $("#redoSearch").click(function() {
+                    window.setTimeout(redoSearch);
+                });
+
+        $("#jumptoGroup").click(function() {
+                    window.setTimeout(jumptoGroup);
+                });
+
+        mlg = new mbiibrowser.MultiLayerGigapan( $("#gigapanViewer"));
+        mlt = new mbiibrowser.MultiLayerTags("interestPoint", selectInterestPoint);
+        mlg.addTags(mlt);
+
+        $(window).resize(function() {
+            mlg.resize($(window).height());
+        });
+
+        window.setTimeout(function() {
+            mlg.resize($(window).height());
+            changeSnapshot();
+        }); 
+
+    });
+
+   </script>
+</head>
+<body>
+<div id="controlPanel" class="overlayPanel">
+    <div> Snapshot: <span id="snapshotTitle"></span></div>
+    <input id="snapshotSlider" type="range" min="0" value="0" max="9"/>
+    <div> Layer: <span id="snapshotLayerTitle"></span></div>
+    <input id="snapshotLayerSlider" type="range" min="0" value="0" max="1"/>
+    <div>Number of galaxies : <span id="NmaxTitle"></span></div>
+    <input id="NmaxSlider" type="range" min="0" value="100" max="300"/> <br/>
+    <div>Mass cut : <span id="MassMinTitle"></span></div>
+    <input id="MassMinSlider" type="range" min="9" value="10" max="15" step="0.01"/> <br/>
+    <input id="redoSearch" type="button" value="Redo Search in this Area"/>
+    <div> Group Locator <br/>
+    Group: <input id="GroupID" type="text" value="0" size="8"/>
+    <input id="jumptoGroup" type="button" value="Jump"/>
+    </div>
+</div>
+<div id="interestPointInfo" class="overlayPanel">
+   <div id="interestPointOverlayCloseButton" onclick="$('#interestPointInfo').hide();">X</div>
+   <div id="interestPointDescription"></div>
+</div>
+<div id="gigapanViewer"> </div>
+</div>
+</body>
+</html>

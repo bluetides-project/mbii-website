@@ -1,0 +1,32 @@
+[
+% for i, s in zip(id, subhalos):
+{
+  "id" : {{'%d' % i}},
+  "center" : {
+     "x" : {{'%.13f' % (s['x'])}},
+     "y" : {{'%.13f' % (s['y'])}}
+  },
+  "bounds" : {
+     "x" : {{'%.13f' % (s['x'] - 0.01)}},
+     "y" : {{'%.13f' % (s['y'] - 0.01)}},
+     "width" : {{'%.13f' % (2 * 0.01)}},
+     "height" : {{'%.13f' % (2 * 0.01)}}
+  },
+  "content" : {
+     "title" : "Galaxy {{"%05d - %05d" % (s['groupid'], i) }}",
+     "groupid" : {{'%d' % s['groupid']}},
+     "iscentral" : {{'%d' % s['iscentral']}},
+     "mass" : {{'%g' % s['mass']}},
+     "gas" : {{'%g' % s['gasmass']}},
+     "bh" : {{'%g' % s['bhmass']}},
+     "i" : {{'%g' % s['SDSS.i']}},
+     "r" : {{'%g' % s['SDSS.r']}},
+     "g" : {{'%g' % s['SDSS.g']}},
+     "description" : "{{"Mass %g" % (s['mass'],)}}"
+  }
+}
+% if i != id[-1]:
+  ,
+% end
+%end
+]

@@ -1,0 +1,25 @@
+[
+% for i, s in zip(id, groups):
+{
+  "id" : {{'%d' % i}},
+  "center" : {
+     "x" : {{'%.13f' % (s['x'])}},
+     "y" : {{'%.13f' % (s['y'])}}
+  },
+  "bounds" : {
+     "x" : {{'%.13f' % (s['x'] - 0.02)}},
+     "y" : {{'%.13f' % (s['y'] - 0.02)}},
+     "width" : {{'%.13f' % (2 * 0.02)}},
+     "height" : {{'%.13f' % (2 * 0.02)}}
+  },
+  "content" : {
+     "title" : "Group {{"%05d" % i }}",
+     "mass" : {{'%g' % s['mass']}},
+     "description" : "{{"Mass %g" % (s['mass'],)}}"
+  }
+}
+% if i != id[-1]:
+  ,
+% end
+%end
+]
