@@ -65,6 +65,7 @@ def makesubhalo(snap):
     outarray = dirarray(os.path.join(output, 'subhalo'), 
         dtype=[('x', 'f4'), 
             ('y', 'f4'), 
+            ('size', 'f4'),
             ('groupid', 'u4'),
             ('iscentral', '?'),
             ('mass', 'f4'),
@@ -97,6 +98,7 @@ def makesubhalo(snap):
     outarray['starmass'] = massbytype[:, 4]
     outarray['bhmass'] = massbytype[:, 5]
     outarray['rcirc'] = sub['rcirc'][mask]
+    outarray['size'] = outarray['rcirc'] / width * 10
     for s in 'irguz':
         data = snap.load('subhalo', 'RfFilter/SDSS.SDSS/%s' %s)
         outarray['SDSS.%s' %s] = data[mask]
@@ -112,6 +114,7 @@ def updatesubhalo(snap):
     outarray = dirarray(os.path.join(output, 'subhalo'), 
         dtype=[('x', 'f4'), 
             ('y', 'f4'), 
+            ('size', 'f4'),
             ('groupid', 'u4'),
             ('iscentral', '?'),
             ('mass', 'f4'),
@@ -127,6 +130,6 @@ def updatesubhalo(snap):
             ('SDSS.z', 'f4'),
             ], shape=mask.sum(), mode='r+')
 
-    outarray['iscentral'] = outarray['mass'] > 0.1 * g['mass'][outarray['groupid']]
+    outarray['size'] = outarray['rcirc'] / width * 10
 
 main()

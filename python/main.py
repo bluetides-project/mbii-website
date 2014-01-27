@@ -109,6 +109,9 @@ def do_search(snapid, type):
 @app.route('/<filename:path>')
 def server_static(filename):
     return static_file(filename, root='/var/www/uwsgi/mbiiweb/www/')
+#@app.route('/')
+#def server_static():
+#    return static_file('index.html', root='/var/www/uwsgi/mbiiweb/www/')
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=8080, debug=True)

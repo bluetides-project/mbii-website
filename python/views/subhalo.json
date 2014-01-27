@@ -1,5 +1,8 @@
 [
 % for i, s in zip(id, subhalos):
+% if s['size'] < 0.001: 
+% s['size'] = 0.001
+% end
 {
   "id" : {{'%d' % i}},
   "center" : {
@@ -7,10 +10,10 @@
      "y" : {{'%.13f' % (s['y'])}}
   },
   "bounds" : {
-     "x" : {{'%.13f' % (s['x'] - 0.01)}},
-     "y" : {{'%.13f' % (s['y'] - 0.01)}},
-     "width" : {{'%.13f' % (2 * 0.01)}},
-     "height" : {{'%.13f' % (2 * 0.01)}}
+     "x" : {{'%.13f' % (s['x'] - s['size'])}},
+     "y" : {{'%.13f' % (s['y'] - s['size'])}},
+     "width" : {{'%.13f' % (2 * s['size'])}},
+     "height" : {{'%.13f' % (2 * s['size'])}}
   },
   "content" : {
      "title" : "Galaxy {{"%05d - %05d" % (s['groupid'], i) }}",

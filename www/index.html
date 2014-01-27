@@ -29,15 +29,24 @@
          width: auto;
          height: auto;
       }
-
+      #controlPanel > div {
+         margin-top: 10px;
+         margin-bottom: 10px;
+      }
       #interestPointInfo {
          display: inline;
          top: 5px;
          left: 5px;
          width: 450px;
-         height: auto;
          font-family: monospace;
+         height: auto;
       }
+      #interestPointDescription {
+         overflow: scroll;
+         font-size: 12pt;
+         max-height: 400px;
+      }
+
       #interestPointInfo ul {
          list-style-type: none;
       }
@@ -82,10 +91,6 @@
          background: url('images/central_galaxy_active.png') no-repeat;
       }
 
-      #interestPointDescription {
-         font-size: 12pt;
-      }
-
       #interestPointOverlayCloseButton {
          font-weight: bold;
          width: 15px;
@@ -111,12 +116,12 @@
     var mlt;    
 
     var MassMin = 0.1;
-    var Nmax = 100;
+    var Nmax = 40;
     var tags = [];
     var currentSnapId = snapshots[0].snapid;
 
     function currentSnapshot() {
-        var control = $("#snapshotSlider");
+        var control = $("#snapshotSelect");
         return snapshots[parseInt(control.val())];
     }
 
@@ -190,33 +195,35 @@
     }
     
     function changeSnapshot() {
-        var control = $("#snapshotSlider");
-        var title = $("#snapshotTitle");
         var snapshot = currentSnapshot()
+        var layerselect = $("#snapshotLayerSelect");
+        var i;
+        $("#snapshotLayerSelect").unbind("change", changeLayer);
+        var oldlayer = parseInt(layerselect.val());
+        layerselect.empty();
+        for(i = 0; i < snapshot.layers.length; i ++) {
+            layerselect.append("<option value=\"" + i +"\">" + snapshot.layers[i].type + "</option>");
+        }
+        layerselect.val(oldlayer);
+        $("#snapshotLayerSelect").bind("change", changeLayer);
         mlg.reopen(snapshot.layers, function() {
-            title.html(snapshot.snapid);
-            window.setTimeout(changeLayer);
+            changeLayer();
             window.setTimeout(redoSearch);
         });
     }
 
     function changeLayer () {
-        var control = $("#snapshotLayerSlider");
-        var title = $("#snapshotLayerTitle");
+        var control = $("#snapshotLayerSelect");
         var sel = parseInt(control.val());
         console.log("change to layer " + sel);
         mlg.switchLayer(sel);
         var snapshot = currentSnapshot();
-        title.html(snapshot.layers[mlg.currentLayer].type);
     }
 
     function changeCut() {
-        console.log("change to Nmax " + Nmax);
-        console.log("change to MassMin " + MassMin);
-        var Nmaxtitle = $("#NmaxTitle");
-        Nmaxtitle.html("" + Nmax);
         var MassMinTitle = $("#MassMinTitle");
-        MassMinTitle.html("" + MassMin);
+        console.log("change to MassMin " + MassMin);
+        MassMinTitle.html(sprintf("%.6f",  MassMin));
 
         var i;
         for(i = 0; i < tags.length && i < Nmax; i ++) {
@@ -240,19 +247,27 @@
             }
         );
     }
-    $(document).ready(function() {
 
+    $(document).ready(function() {
+        var scontrol = $("#snapshotSelect");
+        scontrol.empty();
+        for(i = 0; i < snapshots.length; i ++) {
+            scontrol.append($(sprintf("<option value=\"%d\">%03d</option>", 
+                 i, snapshots[i].snapid)));
+        }
+        $("#about").click(function() {
+                $("#interestPointDescription").html($("#aboutText").html());
+                $("#interestPointInfo").show();
+             }
+         );
         /* do not use 'change' event: it is not always properly emitted */
-        $("#snapshotSlider").prop("max", snapshots.length - 1)
-                .click(function() {
+        
+        $("#snapshotSelect")
+                .change(function() {
                     window.setTimeout(changeSnapshot);
                 });
-        $("#snapshotLayerSlider")
-                .click(function() {
-                    window.setTimeout(changeLayer);
-                });
         $("#NmaxSlider")
-                .click(function() {
+                .change(function() {
                     Nmax = parseInt($("#NmaxSlider").val());
                     window.setTimeout(changeCut);
                 });
@@ -285,32 +300,83 @@
             mlg.resize($(window).height());
             changeSnapshot();
         }); 
-
+        $('#about').click();
     });
 
    </script>
 </head>
 <body>
 <div id="controlPanel" class="overlayPanel">
-    <div> Snapshot: <span id="snapshotTitle"></span></div>
-    <input id="snapshotSlider" type="range" min="0" value="0" max="9"/>
-    <div> Layer: <span id="snapshotLayerTitle"></span></div>
-    <input id="snapshotLayerSlider" type="range" min="0" value="0" max="1"/>
-    <div>Number of galaxies : <span id="NmaxTitle"></span></div>
-    <input id="NmaxSlider" type="range" min="0" value="100" max="300"/> <br/>
-    <div>Mass cut : <span id="MassMinTitle"></span></div>
-    <input id="MassMinSlider" type="range" min="9" value="10" max="15" step="0.01"/> <br/>
-    <input id="redoSearch" type="button" value="Redo Search in this Area"/>
-    <div> Group Locator <br/>
-    Group: <input id="GroupID" type="text" value="0" size="8"/>
-    <input id="jumptoGroup" type="button" value="Jump"/>
+    <div>
+    Snapshot:
+    <select id="snapshotSelect">
+    <option value="0" selected></option>
+    </select>
+     Layer: 
+    <select id="snapshotLayerSelect">
+    <option value="0" selected></option>
+    </select>
+    </div>
+
+    <div> Group: <input id="GroupID" type="text" value="0" size="6"/>
+    <input id="jumptoGroup" type="button" value="Jump"/> <br/>
+    </div>
+
+    <div>
+    <input id="redoSearch" type="button" value="Search in this Area"/>
+    <input id="about" type="button" value="About"/>
+    </div>
+
+    <div >Number of galaxies : 
+    <input id="NmaxSlider" type="number" min="0" value="40" max="300" size="4"/> 
+    </div>
+
+    <div style='display:none;'>Mass cut : 
+        <span id="MassMinTitle"></span>
+    <input id="MassMinSlider" type="range" min="9" value="10" max="15"
+step="0.01"/> 
     </div>
 </div>
 <div id="interestPointInfo" class="overlayPanel">
    <div id="interestPointOverlayCloseButton" onclick="$('#interestPointInfo').hide();">X</div>
-   <div id="interestPointDescription"></div>
+   <h3> MassiveBlack Simulation </h3>
+   <div id="interestPointDescription">
+   </div>
 </div>
+
 <div id="gigapanViewer"> </div>
+<div id="aboutText" style="display:none;">
+    <p>
+        This is an interactive viewer of the cosmological simulation
+        MassiveBlack II (Khandai et al. 2013 in prep.).
+        The hydrodynamical simulation uses 2 times 5 billion particles
+        (half gas, half dark matter) to track the motion of baryons,
+        dark matter in a 100 Mpc/h (about half billion light years) box,
+        since not far from the Big Bang to today. The best tool to
+        visualize simulation of such scale is Gigapan.
+    </p>
+    <p>
+        Shown here is the density of gas (Gas Layer) and the galaxies
+        (Stellar Layer). The density of gas is color coded by its
+        temperature: Red corresponds to 100 million Kelvin, and blue
+        corresponds to 10000 Kelvin. The galaxies are colored with a
+        scheme similar to the images captured in the Sloan Digital Sky Survey.
+        You really have to zoom-in very deep to see the galaxies, because the sky is
+        quite dark indeed.
+    </p>
+    <p>
+        The 100 largest clusters of galaxies are labelled (the Overlay).
+        A circled dot represents the central galaxy(-s) of the cluster.
+        A star represents the bright galaxies in the cluster - only 10
+        brightest galaxies in a cluster are shown. The central galaxy is
+        usually also bright, thus two symbols overlap, ending up with a
+        turtle-like label for the central galaxies. (Who doesn't like turtles?)
+    </p>
+    <p>
+        Click on a label and zoom onto the galaxy. The properties of the
+        galaxy is shown in a pop up. <br/>
+        Have fun!
+    </p>
 </div>
 </body>
 </html>
