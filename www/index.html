@@ -14,9 +14,8 @@
          display: none;
          position: absolute;
          border: 1px solid black;
-         padding: 15px;
+         padding: 10px;
          background-color: rgba(255, 255, 255, .3);
-         margin: 4px;
          color: black;
          z-index: 1000;
       }
@@ -39,12 +38,12 @@
          left: 5px;
          width: 450px;
          font-family: monospace;
+         font-size: 9pt;
          height: auto;
       }
       #interestPointDescription {
          overflow: scroll;
-         font-size: 12pt;
-         max-height: 400px;
+         max-height: 500px;
       }
 
       #interestPointInfo ul {
@@ -339,7 +338,7 @@ step="0.01"/>
 </div>
 <div id="interestPointInfo" class="overlayPanel">
    <div id="interestPointOverlayCloseButton" onclick="$('#interestPointInfo').hide();">X</div>
-   <h3> MassiveBlack Simulation </h3>
+   <div style="font-weight:bold;font-size:1.2em;"> MassiveBlack Simulation </div>
    <div id="interestPointDescription">
    </div>
 </div>
@@ -365,18 +364,22 @@ step="0.01"/>
         quite dark indeed.
     </p>
     <p>
-        The 100 largest clusters of galaxies are labelled (the Overlay).
-        A circled dot represents the central galaxy(-s) of the cluster.
-        A star represents the bright galaxies in the cluster - only 10
-        brightest galaxies in a cluster are shown. The central galaxy is
-        usually also bright, thus two symbols overlap, ending up with a
-        turtle-like label for the central galaxies. (Who doesn't like turtles?)
+        The galaxies (subhalos) are labelled with green crosses. 
+        If a galaxy is the central galaxy of the cluster (group), the cross has
+        a circle. Currently selected galaxy is surrounded by a rectangle.
+        We limit the number of galaxies shown to 40 most massive ones, but it
+        can be changed in "Number of Galaxies". 
+    </p>
+    <p> To switch between different snapshots, use the dropdown box "Snapshot".
+        To switch between different layers, use the dropdown box "Layers". 
+        To jump to a cluster, type its ID and click "Jump".
+        To search for galaxies in the current view, click "Redo Search".
     </p>
     <p>
         Click on a label and zoom onto the galaxy. The properties of the
         galaxy is shown in a pop up. <br/>
-        Have fun!
     </p>
+    <p> Yu Feng @ CMU 2014</p>
 </div>
 </body>
 </html>
