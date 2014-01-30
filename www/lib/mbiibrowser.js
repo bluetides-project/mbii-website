@@ -62,13 +62,18 @@ var mbiibrowser = mbiibrowser || {};
         this.element = $('<div></div>');
         this.labelElement = $('<span>Scale</span>');
         this.element.append(this.labelElement);
-        this.element.append('<hr/>');
+        var bar = $('<hr/>');
+        bar.css('height',  '2px');
+        bar.css('color',  'white');
+        bar.css('border',  'none');
+        bar.css('background-color',  'white');
+        this.element.append(bar);
         this.element.css('position', "absolute");
         this.element.css('width', "200px");
         this.element.css('text-align', "center");
         this.element.css('color', "white");
         this.element.css('bottom', "20px");
-        this.element.css('z-index', "99999");
+        this.element.css('z-index', "199999999");
         this.rootElement.append(this.element);
         this.units = units;
         this.factor = factor;
@@ -121,18 +126,12 @@ var mbiibrowser = mbiibrowser || {};
         return {pixels: pxlen, points: pointlen, label: label};
     }
 
-    ns.MultiLayerGigapan = function(rootElement) {
+    ns.MultiLayerGigapan = function(rootElement, scale) {
         this.layers = [];
         this.viewers = [];
+        this.scale = scale;
         this.currentLayer = 0;
         this.rootElement = rootElement;
-        units = [
-            {str: 'pc/h', factor:0.001},
-            {str: 'Kpc/h', factor:1.0},
-            {str: 'Mpc/h', factor:1000.0},
-            {str: 'Gpc/h', factor:1000000.0},
-        ];
-        this.scale = new ns.Scale(rootElement, units, 428174.36999344);
         this.bounds = null;
         this.tags = [];
     };

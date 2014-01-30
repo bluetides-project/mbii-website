@@ -15,9 +15,17 @@
          position: absolute;
          border: 1px solid black;
          padding: 10px;
-         background-color: rgba(255, 255, 255, .3);
-         color: black;
+         background-color: rgba(0, 0, 0, .6);
+         color: white;
          z-index: 1000;
+      }
+      #socialAwareness {
+        z-index:500;
+        position:absolute;
+        width:100px; 
+        left:10px;
+        bottom:10px;
+        display:inline;
       }
 
       #controlPanel {
@@ -32,6 +40,7 @@
          margin-top: 10px;
          margin-bottom: 10px;
       }
+
       #interestPointInfo {
          display: inline;
          top: 5px;
@@ -39,11 +48,11 @@
          width: 450px;
          font-family: monospace;
          font-size: 9pt;
-         height: auto;
+         height: 80%;
+         overflow-y: scroll;
       }
       #interestPointDescription {
-         overflow: scroll;
-         max-height: 500px;
+         display: block;
       }
 
       #interestPointInfo ul {
@@ -90,7 +99,7 @@
          background: url('images/central_galaxy_active.png') no-repeat;
       }
 
-      #interestPointOverlayCloseButton {
+      #interestPointInfo>.Button {
          font-weight: bold;
          width: 15px;
          height: 15px;
@@ -101,6 +110,9 @@
          cursor: pointer;
       }
    </style>
+   <script language="JavaScript" type="text/javascript" src="http://platform.twitter.com/widgets.js"> </script>
+   <script language="JavaScript" type="text/javascript" src="https://connect.facebook.net/en_US/all.js#xfbml=1"></script>
+   <script language="JavaScript" type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
    <script language="JavaScript" type="text/javascript"
        src="datasource.js"></script>
    <script language="JavaScript" type="text/javascript" src="lib/jquery/jquery-1.10.2.js"></script>
@@ -110,6 +122,7 @@
    <script language="JavaScript" type="text/javascript" src="lib/org/gigapan/seadragon/SeadragonUtils.js"></script>
    <script language="JavaScript" type="text/javascript" src="lib/sprintf.js"></script>
    <script language="JavaScript" type="text/javascript" src="lib/mbiibrowser.js"></script>
+
    <script language="JavaScript" type="text/javascript"> 
     var mlg;
     var mlt;    
@@ -125,7 +138,6 @@
     }
 
     function selectInterestPoint(mlt, index) {
-        //$("#interestPointOverlayCloseButton").click();
         var id = mlt.getAttr("id", index);
         viewObject(id, "subhalo",
             function() {
@@ -287,7 +299,15 @@
                     window.setTimeout(jumptoGroup);
                 });
 
-        mlg = new mbiibrowser.MultiLayerGigapan( $("#gigapanViewer"));
+        units = [
+            {str: 'pc/h', factor:0.001},
+            {str: 'Kpc/h', factor:1.0},
+            {str: 'Mpc/h', factor:1000.0},
+            {str: 'Gpc/h', factor:1000000.0},
+        ];
+
+        var scale = new mbiibrowser.Scale($("#gigapanViewer"), units, 428174.36999344);
+        mlg = new mbiibrowser.MultiLayerGigapan($("#gigapanViewer"), scale);
         mlt = new mbiibrowser.MultiLayerTags("interestPoint", selectInterestPoint);
         mlg.addTags(mlt);
 
@@ -305,6 +325,7 @@
    </script>
 </head>
 <body>
+<div id="fb-root"></div>
 <div id="controlPanel" class="overlayPanel">
     <div>
     Snapshot:
@@ -317,17 +338,15 @@
     </select>
     </div>
 
-    <div> Group: <input id="GroupID" type="text" value="0" size="6"/>
-    <input id="jumptoGroup" type="button" value="Jump"/> <br/>
+    <div> 
+    <input id="jumptoGroup" type="button" value="Jump"/> 
+to group <input id="GroupID" type="text" value="0" size="6"/>
     </div>
 
     <div>
-    <input id="redoSearch" type="button" value="Search in this Area"/>
-    <input id="about" type="button" value="About"/>
-    </div>
-
-    <div >Number of galaxies : 
-    <input id="NmaxSlider" type="number" min="0" value="40" max="300" size="4"/> 
+    <input id="redoSearch" type="button" value="Search"/> (limit to 
+    <input id="NmaxSlider" type="number" min="0" value="40" max="300" size="4"/>
+galaxies )
     </div>
 
     <div style='display:none;'>Mass cut : 
@@ -336,14 +355,30 @@
 step="0.01"/> 
     </div>
 </div>
+
 <div id="interestPointInfo" class="overlayPanel">
-   <div id="interestPointOverlayCloseButton" onclick="$('#interestPointInfo').hide();">X</div>
-   <div style="font-weight:bold;font-size:1.2em;"> MassiveBlack Simulation </div>
+   <div class="Button" id="interestPointOverlayCloseButton" onclick="$('#interestPointInfo').hide();">X</div>
+   <div class="Button" id="about"/><a>?</a></div> 
+   <div style="font-weight:bold;font-size:1.2em;"> MassiveBlack Simulation 
+   </div>
+   <hr/>
    <div id="interestPointDescription">
    </div>
 </div>
+<div id="socialAwareness">
+<g:plusone size="medium" annotation="bubble" data-recommendations="false"></g:plusone>
+<div>
+<a href="https://twitter.com/share" class="twitter-share-button"
+data-url="http://mbii.phys.cmu.edu/"
+data-lang="en">Tweet</a> 
+</div>
+<div class="fb-share-button" data-href="http://mbii.phys.cmu.edu"
+data-type="button_count"> </div>
+</div>
 
-<div id="gigapanViewer"> </div>
+<div id="gigapanViewer"> 
+
+</div>
 <div id="aboutText" style="display:none;">
     <p>
         This is an interactive viewer of the cosmological simulation
@@ -373,7 +408,7 @@ step="0.01"/>
     <p> To switch between different snapshots, use the dropdown box "Snapshot".
         To switch between different layers, use the dropdown box "Layers". 
         To jump to a cluster, type its ID and click "Jump".
-        To search for galaxies in the current view, click "Redo Search".
+        To search for galaxies in the current view, click "Search".
     </p>
     <p>
         Click on a label and zoom onto the galaxy. The properties of the

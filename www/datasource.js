@@ -57,7 +57,7 @@
                 snapid: 85,
                 layers: [
                     { /*FIXME*/
-                    type: 'gas', id: 147497,
+                    type: 'gas', id: 148751,
                     width : 214087, height : 122474
                     },
                     {
