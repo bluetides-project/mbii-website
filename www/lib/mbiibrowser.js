@@ -56,11 +56,83 @@ var mbiibrowser = mbiibrowser || {};
         return tag[name];
     }
 
+    ns.Scale = function(rootElement, units, factor) {
+        /* units is {str:, factor} */
+        this.rootElement = rootElement;
+        this.element = $('<div></div>');
+        this.labelElement = $('<span>Scale</span>');
+        this.element.append(this.labelElement);
+        this.element.append('<hr/>');
+        this.element.css('position', "absolute");
+        this.element.css('width', "200px");
+        this.element.css('text-align', "center");
+        this.element.css('color', "white");
+        this.element.css('bottom', "20px");
+        this.element.css('z-index', "99999");
+        this.rootElement.append(this.element);
+        this.units = units;
+        this.factor = factor;
+        this.width = 200;
+    };
+
+    ns.Scale.prototype.setLabel = function (label) {
+        this.labelElement.text(label);
+    };
+
+    ns.Scale.prototype.redraw = function () {
+        console.log("" + this.width);
+        this.element.css('width', sprintf('%dpx', this.width));
+        this.element.css("left", (this.rootElement.width() - this.width) / 2);
+    }
+    ns.Scale.prototype.fit = function (viewer) {
+        var width = this.calculateScaleWidth(viewer);
+        this.setLabel(width.label);
+        this.setWidth(width.pixels);
+    };
+
+    ns.Scale.prototype.setWidth = function (width) {
+        this.width = width;
+        this.redraw();
+    };
+
+    ns.Scale.prototype.calculateScaleWidth = function (viewer) {
+        var pt;
+        var pointlen = 2.0;
+        var pxlen = 0;
+        while(pxlen < 100 || pxlen > 200) {
+            pointlen = pointlen * 0.5;
+            pt = new Seadragon.Point(pointlen, 0.0);
+            pxlen = viewer.viewport.deltaPixelsFromPoints(pt, true).x;
+        }
+        var i;
+        var tmp;
+        var physlen;
+        for(i = 0; i < this.units.length; i ++) {
+            tmp = pointlen * this.factor / this.units[i].factor;
+            if (tmp < 1) break; 
+        }
+        i = (i >0)?i-1:0;
+        physlen = pointlen * this.factor / this.units[i].factor;
+        physlen = parseFloat(Number(physlen).toPrecision(1));
+        pointlen = physlen * this.units[i].factor / this.factor;
+        pxlen = viewer.viewport.deltaPixelsFromPoints(
+                new Seadragon.Point(pointlen, 0.0), true).x;
+        label = sprintf("%f %s", physlen, this.units[i].str);
+        return {pixels: pxlen, points: pointlen, label: label};
+    }
+
     ns.MultiLayerGigapan = function(rootElement) {
         this.layers = [];
         this.viewers = [];
         this.currentLayer = 0;
         this.rootElement = rootElement;
+        units = [
+            {str: 'pc/h', factor:0.001},
+            {str: 'Kpc/h', factor:1.0},
+            {str: 'Mpc/h', factor:1000.0},
+            {str: 'Gpc/h', factor:1000000.0},
+        ];
+        this.scale = new ns.Scale(rootElement, units, 428174.36999344);
         this.bounds = null;
         this.tags = [];
     };
@@ -105,6 +177,7 @@ var mbiibrowser = mbiibrowser || {};
         }
         this.saveBounds();
     };
+
     ns.MultiLayerGigapan.prototype.reopen = function(layers, callback) {
         /* layers will have width, height and gigapan id*/
         var i;
@@ -121,6 +194,7 @@ var mbiibrowser = mbiibrowser || {};
     ns.MultiLayerGigapan.prototype.resize = function(height) {
         var i;
         this.height = height;
+        this.scale.redraw();
         for (i = 0; i < this.layers.length; i++) {
             this.layers[i].element.height(height);
         }
@@ -175,6 +249,7 @@ var mbiibrowser = mbiibrowser || {};
             viewer.hide();
         } else {
             this.applyBounds();
+            animationHandler.apply(this, [viewer]);
         }
         this.openedViewers = this.openedViewers + 1;
         if(this.openedViewers == this.layers.length) {
@@ -182,6 +257,11 @@ var mbiibrowser = mbiibrowser || {};
             this.openedCallback(this);
         } else {
         }
+    }
+
+    function animationHandler(viewer) {
+        console.log("animation");
+        this.scale.fit(viewer);
     }
 
     ns.MultiLayerGigapan.prototype.createViewer = function(i) {
@@ -192,10 +272,11 @@ var mbiibrowser = mbiibrowser || {};
         this.viewers.push(viewer);
         console.log("createViewer " + i);
         viewer.addEventListener("open", viewerOpened.bind(this));
-        viewer.addEventListener("animiationfinish", 
+        viewer.addEventListener("animation", animationHandler.bind(this));
+        viewer.addEventListener("animationfinish", 
             (function(viewer) {
             console.log("animation finish");
-            this.bounds = viewer.getBounds();}
+            this.bounds = viewer.viewport.getBounds();}
             ).bind(this)
         );
         openTiles(viewer, layer);
