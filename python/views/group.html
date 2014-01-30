@@ -1,10 +1,10 @@
 % for gid, group in zip(id, groups):
-    <h2> Group: {{gid}}  </h2>
-    <ul>
-    <li>Mass: {{group['mass'] }} </li> 
-    <li>X: {{group['x'] }} </li>
-    <li>Y: {{group['y'] }} </li>
-    <li>Nsubhalo: {{group['Nsubhalo'] }} </li>
-    <li>first: {{group['firstsubhalo'] }} </li>
-    </ul>
+    <h2> Group: {{'%05d' % gid}}  </h2>
+    <table>
+    <tr><td>Mass</td><td> {{'%.5g' % (group['mass'] * 1e10)}} M_sun / h </td></tr> 
+    <tr><td>X</td><td> {{'%.5g' % group['x'] }} Kpc / h</td></tr>
+    <tr><td>Y</td><td> {{'%.5g' % group['y'] }} Kpc / h</td></tr>
+    <tr><td>Nsubhalo</td><td> {{group['Nsubhalo'] }} </td></tr>
+    <tr><td>first</td><td> {{group['firstsubhalo'] }} </td></tr>
+    </table>
 % end
