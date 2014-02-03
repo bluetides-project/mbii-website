@@ -2,8 +2,9 @@
     <h2> Group: {{'%05d' % gid}}  </h2>
     <table>
     <tr><td>Mass</td><td> {{'%.5g' % (group['mass'] * 1e10)}} M_sun / h </td></tr> 
-    <tr><td>X</td><td> {{'%.5g' % group['x'] }} Kpc / h</td></tr>
-    <tr><td>Y</td><td> {{'%.5g' % group['y'] }} Kpc / h</td></tr>
+    <tr><td>X</td><td> {{'%.5g' % group['pos'][0] }} Kpc / h</td></tr>
+    <tr><td>Y</td><td> {{'%.5g' % group['pos'][1] }} Kpc / h</td></tr>
+    <tr><td>Z</td><td> {{'%.5g' % group['pos'][2] }} Kpc / h</td></tr>
     <tr><td>Nsubhalo</td><td> {{group['Nsubhalo'] }} </td></tr>
     <tr><td>first</td><td> {{group['firstsubhalo'] }} </td></tr>
     </table>

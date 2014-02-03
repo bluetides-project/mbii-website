@@ -20,11 +20,6 @@
      "groupid" : {{'%d' % s['groupid']}},
      "iscentral" : {{'%d' % s['iscentral']}},
      "mass" : {{'%g' % s['mass']}},
-     "gas" : {{'%g' % s['gasmass']}},
-     "bh" : {{'%g' % s['bhmass']}},
-     "i" : {{'%g' % s['SDSS.i']}},
-     "r" : {{'%g' % s['SDSS.r']}},
-     "g" : {{'%g' % s['SDSS.g']}},
      "description" : "{{"Mass %g" % (s['mass'],)}}"
   }
 }

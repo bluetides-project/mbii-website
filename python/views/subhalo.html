@@ -4,15 +4,20 @@
     <tr><td>Group</td><td> {{'%.5g' % sub['groupid'] }} </td></tr> 
     <tr><td>IsCentral</td><td> {{'%.5g' % sub['iscentral'] }} </td></tr> 
     <tr><td>Mass</td><td> {{'%.5g' % (sub['mass'] * 1e10)}} M_sun / h </td></tr> 
-    <tr><td>Gas </td><td> {{'%.5g' % (sub['gasmass'] * 1e10) }} M_sun / h</td></tr> 
-    <tr><td>Dark Matter Mass</td><td> {{'%.5g' % (sub['darkmass'] * 1e10)}} M_sun / h </td></tr> 
-    <tr><td>Stellar Mass</td><td> {{'%.5g' % (sub['starmass'] * 1e10) }} M_sun / h </td></tr> 
-    <tr><td>Blackhole Mass</td><td> {{'%.5g' % (sub['bhmass'] * 1e10) }} M_sun / h</td></tr> 
+    <tr><td>Gas </td><td> {{'%.5g' % (sub['massbytype'][0] * 1e10) }} M_sun / h</td></tr> 
+    <tr><td>Dark Matter Mass</td><td> {{'%.5g' % (sub['massbytype'][1] * 1e10)}} M_sun / h </td></tr> 
+    <tr><td>Stellar Mass</td><td> {{'%.5g' % (sub['massbytype'][4] * 1e10) }} M_sun / h </td></tr> 
+    <tr><td>Blackhole Mass</td><td> {{'%.5g' % (sub['massbytype'][5] * 1e10) }} M_sun / h</td></tr> 
     <tr><td>Rcirc</td><td> {{'%.5g' % sub['rcirc'] }} Kpc / h</td></tr> 
-    <tr><td>X</td><td> {{'%.5g' % sub['x'] }} Kpc / h</td></tr>
-    <tr><td>Y</td><td> {{'%.5g' % sub['y'] }} Kpc / h </td></tr>
+    <tr><td>Vcirc</td><td> {{'%.5g' % sub['vcirc'] }} km / sec</td></tr> 
+    <tr><td>Vdisp</td><td> {{'%.5g' % sub['vdisp'] }} km / sec</td></tr> 
+    <tr><td>X</td><td> {{'%.5g' % sub['pos'][0] }} Kpc / h</td></tr>
+    <tr><td>Y</td><td> {{'%.5g' % sub['pos'][1] }} Kpc / h </td></tr>
+    <tr><td>Z</td><td> {{'%.5g' % sub['pos'][2] }} Kpc / h </td></tr>
     <tr><td>SDSS.i</td><td> {{'%.5g' % (sub['SDSS.i'] * 1e28) }} ergs / (s * HZ) </td></tr>
     <tr><td>SDDD.r</td><td> {{'%.5g' % (sub['SDSS.r'] * 1e28) }} ergs / (s * HZ) </td></tr>
     <tr><td>SDDD.g</td><td> {{'%.5g' % (sub['SDSS.g'] * 1e28) }} ergs / (s * HZ) </td></tr>
+    <tr><td>SDDD.u</td><td> {{'%.5g' % (sub['SDSS.u'] * 1e28) }} ergs / (s * HZ) </td></tr>
+    <tr><td>SDDD.z</td><td> {{'%.5g' % (sub['SDSS.z'] * 1e28) }} ergs / (s * HZ) </td></tr>
     </table>
 % end
