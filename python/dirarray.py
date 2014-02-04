@@ -3,8 +3,6 @@ import os.path
 import os
 import numpy
 
-
-
 class dirarray(object):
     def __init__(self, path, shape=None, dtype=None, mode='r+'):
         self.mode = mode

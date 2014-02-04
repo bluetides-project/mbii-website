@@ -34,8 +34,8 @@ def main():
     metadata['redshift'] = snap.redshift
     numpy.savez(os.path.join(output, 'metadata.npz'), metadata=metadata)
 
-    makegroup(snap, update=False)
-    makesubhalo(snap, update=False)
+    makegroup(snap, update=True)
+    makesubhalo(snap, update=True)
 
 def makegroup(snap, update=False):
     g = snap.readgroup()
@@ -48,7 +48,7 @@ def makegroup(snap, update=False):
             ('lenbytype', ('u4',6)), 
             ('Nsubhalo', 'u4'),
             ('firstsubhalo', 'u4'),
-            ], shape=len(g), mode='w+')
+            ], shape=len(g), mode='r+' if update else 'w+')
 
     if not update:
         x, y, z = g['pos'].T.copy()
@@ -56,12 +56,12 @@ def makegroup(snap, update=False):
         outarray['y'] = x / width
         outarray['x'] = y / width
     
-    outarray['pos'] = g['pos']
-    outarray['mass'] = g['mass']
-    outarray['massbytype'] = g['massbytype']
-    outarray['lenbytype'] = g['lenbytype']
-    outarray['Nsubhalo'] = g['nhalo']
-    outarray['firstsubhalo'] = numpy.concatenate([[0], g['nhalo'].cumsum()])[:-1]
+        outarray['pos'] = g['pos']
+        outarray['mass'] = g['mass']
+        outarray['massbytype'] = g['massbytype']
+        outarray['lenbytype'] = g['lenbytype']
+        outarray['Nsubhalo'] = g['nhalo']
+        outarray['firstsubhalo'] = numpy.concatenate([[0], g['nhalo'].cumsum()])[:-1]
     print outarray[0]
 
 def makesubhalo(snap, update=False):
@@ -74,6 +74,7 @@ def makesubhalo(snap, update=False):
             ('x', 'f4'), 
             ('y', 'f4'), 
             ('pos', ('f4', 3)), 
+            ('vel', ('f4', 3)), 
             ('size', 'f4'),
             ('groupid', 'u4'),
             ('iscentral', '?'),
@@ -88,9 +89,9 @@ def makesubhalo(snap, update=False):
             ('FAKE.Un', 'f4'), ('FAKE.V', 'f4'), ('FAKE.Vn', 'f4'), ('FAKE.Vw', 'f4'),
             ('GALEX.FUV', 'f4'), ('GALEX.NUV', 'f4'),
             ('UKIRT.WFCAM.H', 'f4'), ('UKIRT.WFCAM.J', 'f4'), ('UKIRT.WFCAM.K', 'f4'), ('UKIRT.WFCAM.Y', 'f4'),
-            ], shape=mask.sum(), mode='w+')
+            ], shape=mask.sum(), mode='r+' if update else 'w+')
 
-
+    outarray['vel'] = sub['vel'][mask]
     if not update:
         x, y, z = numpy.float32(sub['pos'].T)
         x = x[mask]
@@ -100,28 +101,28 @@ def makesubhalo(snap, update=False):
         outarray['x'] = y / width
         outarray['y'] = x / width
     
-    outarray['pos'] = sub['pos'][mask]
-    outarray['mass'] = sub['mass'][mask]
-    outarray['groupid'] = sub['groupid'][mask]
-    massbytype = sub['massbytype'][mask]
-    outarray['iscentral'] = outarray['mass'] > 0.3 * g['mass'][outarray['groupid']]
-    outarray['massbytype'] = massbytype
-    outarray['rcirc'] = sub['rcirc'][mask]
-    outarray['vcirc'] = sub['vcirc'][mask]
-    outarray['vdisp'] = sub['vdisp'][mask]
-    outarray['size'] = outarray['rcirc'] / width * 10
-    for s in ['1500', '2000', '2500', 'Un', 'V', 'Vn', 'Vw']:
-        data = snap.load('subhalo', 'RfFilter/FAKE.FAKE/%s' %s)
-        outarray['FAKE.%s' %s] = data[mask]
-    for s in ['FUV', 'NUV']:
-        data = snap.load('subhalo', 'RfFilter/GALEX.GALEX/%s' %s)
-        outarray['GALEX.%s' %s] = data[mask]
-    for s in ['H', 'J', 'K', 'Y']:
-        data = snap.load('subhalo', 'RfFilter/UKIRT.WFCAM/%s' %s)
-        outarray['UKIRT.WFCAM.%s' %s] = data[mask]
-    for s in 'irguz':
-        data = snap.load('subhalo', 'RfFilter/SDSS.SDSS/%s' %s)
-        outarray['SDSS.%s' %s] = data[mask]
+        outarray['pos'] = sub['pos'][mask]
+        outarray['mass'] = sub['mass'][mask]
+        outarray['groupid'] = sub['groupid'][mask]
+        massbytype = sub['massbytype'][mask]
+        outarray['iscentral'] = outarray['mass'] > 0.3 * g['mass'][outarray['groupid']]
+        outarray['massbytype'] = massbytype
+        outarray['rcirc'] = sub['rcirc'][mask]
+        outarray['vcirc'] = sub['vcirc'][mask]
+        outarray['vdisp'] = sub['vdisp'][mask]
+        outarray['size'] = outarray['rcirc'] / width * 10
+        for s in ['1500', '2000', '2500', 'Un', 'V', 'Vn', 'Vw']:
+            data = snap.load('subhalo', 'RfFilter/FAKE.FAKE/%s' %s)
+            outarray['FAKE.%s' %s] = data[mask]
+        for s in ['FUV', 'NUV']:
+            data = snap.load('subhalo', 'RfFilter/GALEX.GALEX/%s' %s)
+            outarray['GALEX.%s' %s] = data[mask]
+        for s in ['H', 'J', 'K', 'Y']:
+            data = snap.load('subhalo', 'RfFilter/UKIRT.WFCAM/%s' %s)
+            outarray['UKIRT.WFCAM.%s' %s] = data[mask]
+        for s in 'irguz':
+            data = snap.load('subhalo', 'RfFilter/SDSS.SDSS/%s' %s)
+            outarray['SDSS.%s' %s] = data[mask]
     print sub['pos'][0]
     print outarray[0]
     print outarray.dtype

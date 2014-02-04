@@ -8,6 +8,7 @@
          margin: 0;
          padding: 0;
          font-family: Verdana, Helvetica, Arial, sans-serif;
+         font-size: 9pt;
       }
 
       .overlayPanel {
@@ -47,7 +48,6 @@
          left: 5px;
          width: 450px;
          font-family: monospace;
-         font-size: 9pt;
          max-height: 80%;
          overflow-y: scroll;
       }
@@ -99,13 +99,29 @@
          background: url('images/central_galaxy_active.png') no-repeat;
       }
 
-      #interestPointInfo>.Button {
+      .Button>a {
+           text-decoration: none; 
+           color: white;
+       }
+      .Button>a:hover {
+           text-decoration: none; 
+           color: yellow;
+       }
+      .Button:hover {
+           text-decoration: none; 
+           color: yellow;
+       }
+      .overlayPanel>.Button {
          font-weight: bold;
-         width: 15px;
-         height: 15px;
-         line-height: 15px;
+         font-family: monospace;
+         font-size: 12px;
+         padding: 2px;
+//         width: 15px;
+ //        height: 15px;
+  //       line-height: 15px;
          text-align: center;
-         border: 1px solid black;
+         border: 1px solid white;
+         background-color: rgba(255, 255, 255, 0.2);
          float: right;
          cursor: pointer;
       }
@@ -269,6 +285,12 @@
         $("#about").click(function() {
                 $("#interestPointDescription").html($("#aboutText").html());
                 $("#interestPointInfo").show();
+                $("#interestPointOverlayCloseButton").bind("click",
+                    function() {
+                        $("#interestPointInfo").hide();
+                        $("#interestPointOverlayCloseButton").unbind("click");
+                    }
+                );
              }
          );
         /* do not use 'change' event: it is not always properly emitted */
@@ -327,6 +349,10 @@
 <body>
 <div id="fb-root"></div>
 <div id="controlPanel" class="overlayPanel">
+   <div class="Button" id="about"/><a title="About">About</a></div> 
+   <div style="font-weight:bold;font-size:1.1em;"> MassiveBlack II</div>
+   <hr style="width:100%;"/>
+    <div>
     <div>
     Snapshot:
     <select id="snapshotSelect">
@@ -354,13 +380,13 @@ galaxies )
     <input id="MassMinSlider" type="range" min="9" value="10" max="15"
 step="0.01"/> 
     </div>
+    </div>
 </div>
 
 <div id="interestPointInfo" class="overlayPanel">
-   <div class="Button" id="interestPointOverlayCloseButton" onclick="$('#interestPointInfo').hide();">X</div>
-   <div class="Button" id="about"/><a>?</a></div> 
-   <div style="font-weight:bold;font-size:1.2em;"> MassiveBlack Simulation 
-   </div>
+   <div class="Button" id="interestPointOverlayCloseButton" title="Close">Close</div>
+   <div class="Button" id="dataAccessbutton"/><a href='data/' title="Access the Raw data">DataAccess</a></div> 
+   <div style="font-weight:bold;font-size:1.1em;"> About </div>
    <hr/>
    <div id="interestPointDescription">
    </div>
