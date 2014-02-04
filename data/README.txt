@@ -1,13 +1,15 @@
 Accessing MassiveBlack-II data.
 
-1. First, did you Agree to the User Agreement yet?
+1. First, did you agree to the User Agreement and provide your email address yet?
 
-    If not so, please read http://mbii.phys.cmu.edu/data/. Basically you are
-required to acknowledge MassiveBlack-II simulation in published works.
+    If not so, please read http://mbii.phys.cmu.edu/data/. 
+    Please acknowledge the MassiveBlack-II simulation if the data is used 
+    in published works.
 
 2. Directory strcture.
+
     You can access the snapshots either by-redshift or by-snapid.
-    Redshifts decreases with time; snap-id increases.
+    Redshift decreases with time; snap-id increases with time.
  
     Each snapshot is contained in one directory.
 
@@ -24,12 +26,12 @@ required to acknowledge MassiveBlack-II simulation in published works.
 
    lftp -c mirror http://mbii.phys.cmu.edu/data/by-redshift/ MB-II
 
-3. The easiest way to use a snapshot is to access them with the provided
+3. The easiest way to use snapshots is to access them with the provided
     dirarray.py python module.
 
     wget http://mbii.phys.cmu.edu/data/dirarray.py
 
-    (Suppose ROOT is where the data is rsynced)
+    then, (assuming ROOT is where the data is synced)
 
     from dirarray import dirarray
     def getgroup(snap):
@@ -42,11 +44,13 @@ required to acknowledge MassiveBlack-II simulation in published works.
 
     The type of the properties are stored in _meta.npz in each directory.
   
+    Here is the list of subhalo properties:
+
     ('x', 'f4'), # visualization x coordinate
     ('y', 'f4'), # visualization y coordinate
     ('size', 'f4'), # visualization size
     ('pos', ('f4', 3)),  # position in the simulation Kpc/h
-    ('vel', ('f4', 3)),  # position in the simulation Kpc/h
+    ('vel', ('f4', 3)),  # peculiar velocity in the simulation km/s
     ('groupid', 'u4'),   # group that owns this subhalo
     ('iscentral', '?'),  # if the mass >= 40% of the host group
     ('mass', 'f4'),      # total mass 1e10 Msun/h

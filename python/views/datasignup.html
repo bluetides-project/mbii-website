@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Access: MassiveBlack-II Simulation</title>
+    <style type="text/css">
+        body {
+            max-width: 650px;
+            background: rgb(32, 32, 32);
+            color: rgb(192, 192, 192);
+        }
+        #footer {
+            font-size: 0.8em;
+            text-align: right;
+        }
+        h1, h2 {
+            color: white;
+        }
+        h2 > a {
+            color:white;
+        }
+        a {
+            color: rgb(192, 192, 0);
+        }
+        body>div {
+            padding: 20px;
+        }
+        .ProtectedContent {
+            display: none;
+            border: dashed;
+            padding: 10px;
+            margin: 10px;
+        } 
+        #Agreement {
+            margin: 4px;
+            border: solid;
+        }
+        input[type=checkbox] {
+            
+        }
+    </style>
+    <script language="JavaScript" type="text/javascript" src="/lib/jquery/jquery-1.10.2.js"></script>
+    <script language="JavaScript" type="text/javascript"> 
+    </script>
+</head>
+<body>
+<h1>MassiveBlack II Simulation </h1>
+<h2>Data Access</h2>
+<div id="Agreement">
+    <div id="verboseAgreement">
+    <h2><a id="UA">User Agreement</a> </h2>
+    <p>
+    The simulation was run on the Cray XT5 supercomputer
+    Kraken at the National Institute for Computational Sci-
+    ences. This research has been funded by the National Science
+    Foundation (NSF) PetaApps program, OCI-0749212 and
+    by NSF AST-1009781.  </p>
+
+    <p>
+    You are welcome to use the data from the MassiveBlack II
+    simulation hosted on this server, but please supply your email
+    address [For our records and for update notifications] and agree to the following: </p>
+
+    <p>
+    The data provided here are AS-IS. 
+    </p>
+    </div>
+    <p>
+    If you use the data from MassiveBlack II simulation, 
+    please cite<br/>
+
+    <em>The MassiveBlack-II Simulation: The Evolution of Halos
+and Galaxies to z ~ 0</em>, 
+    Nishikanta Khandai , Tiziana Di Matteo , Rupert Croft , Stephen Wilkins ,
+    Yu Feng , Evan Tucker , Colin DeGraf , Mao-Sheng Liu, <em>MNRAS,
+    submitted</em>, 2014
+    </p>
+    
+    <div style="margin: 20px; text-align:center;">
+% if error is not None:
+    <div style="color:red; margin:10px;">
+    {{ error }}
+    </div>
+% end
+    <form action="{{signup}}" method="post" style="margin:20px; line-height:3em;">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email"/> <br/>
+        <input type="checkbox" id="agree" name="agree"/>
+        <label for="Agree">I Accept the User Agreement.  </label> <br/>
+        <input type="submit" id="submit" value="Access the data"/>
+    </form>
+    </div>
+</div>
+<hr/>
+<div id='footer'> Yu Feng 2014 </div>
+</body>
+</html>

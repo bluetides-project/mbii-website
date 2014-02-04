@@ -22,7 +22,7 @@
                     width : 214087, height : 122474
                     }, 
                     { //FIXME
-                    type: 'star', id: 148688,
+                    type: 'star', id: 149228,
                     width : 214087, height : 122474
                     }
                 ]
