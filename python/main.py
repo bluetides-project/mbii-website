@@ -6,7 +6,7 @@ import os.path
 
 app = application = Bottle()
 
-ROOT = '/var/www/uwsgi/mbiiweb/data'
+ROOT = '/var/www/uwsgi/mbiiweb/internal'
 BOXSIZE = numpy.array([244948.94607753,  428174.36999344 ])
 
 def getmeta(snapid):

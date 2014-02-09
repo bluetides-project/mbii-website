@@ -16,7 +16,7 @@ print cub.newboxsize
 from sys import argv
 
 snapid = int(argv[1])
-output = '../data/%03d' % snapid
+output = '../internal/%03d' % snapid
 ROOT = '../MB-IIa'
 
 def main():

@@ -3,7 +3,7 @@ import dirarray
 import os.path
 import os
 import glob
-ROOT = '/var/www/uwsgi/mbiiweb/data'
+ROOT = '/var/www/uwsgi/mbiiweb/internal'
 
 def getmeta(snapid):
     meta = numpy.load(os.path.join(ROOT, '%03d' % snapid, 'metadata.npz'))

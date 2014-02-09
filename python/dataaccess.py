@@ -49,19 +49,20 @@ def finduser(users, email):
 def hello():
     return "Hello World!"
 
-@app.get('/signup')
 @app.get('/')
+@app.get('/signup')
+@app.get('/signup/<email:re:[^/]*>')
 @view('datasignup.html')
-def signup():
-    return dict(protected=True, email='', 
+def signup(email=''):
+    return dict(protected=True, email=email, 
         error=None,
         signup=makeurl('signup')
         )
 
-@app.get('/denied')
+@app.get('/denied/<email:re:[^/]*>')
 @view('datasignup.html')
-def signup():
-    return dict(protected=True, email='', 
+def signup(email):
+    return dict(protected=True, email=email, 
         error="Please submit a valid email address and accept the agreement.", 
         signup=makeurl('signup'))
 
@@ -73,12 +74,12 @@ def signup():
     agree = f.get("agree")
     users = loadusers()
     if agree != 'on':
-        redirect(makeurl('denied'))
+        redirect(makeurl('denied/' + email))
     if finduser(users, email) is None:
         from validate_email import validate_email
         verify = validate_email(email)
         if not verify:
-            redirect(makeurl('denied'))
+            redirect(makeurl('denied/' + email))
             return 
         users = numpy.append(users, numpy.empty(1, dtype=dtype))
         
@@ -103,17 +104,17 @@ def access(email):
             prefix=makeurl('d/' + email),
             signup=makeurl('signup'))
     else:
-        redirect(makeurl('denied'))
+        redirect(makeurl('denied/' + email))
         return
         
 @app.get('/d/<email:re:[^/]*>/<path:path>')
 def feed(email, path):
     if auth(email):
-        response.headers['X-Accel-Redirect'] = '/data/' + path
+        response.headers['X-Accel-Redirect'] = '/internal/' + path
         response.headers['Content-Type'] = 'text/plain'
         return
     else:
-        redirect(makeurl('denied'))
+        redirect(makeurl('denied/' + email))
         return
 
 if __name__ == '__main__':
