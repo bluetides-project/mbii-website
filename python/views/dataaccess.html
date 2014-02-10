@@ -2,28 +2,8 @@
 <html>
 <head>
     <title>Data Access: MassiveBlack-II Simulation</title>
+    <link href="/lib/css/dataaccess.css" rel="stylesheet">
     <style type="text/css">
-        body {
-            max-width: 650px;
-            background: rgb(32, 32, 32);
-            color: rgb(192, 192, 192);
-        }
-        #footer {
-            font-size: 0.8em;
-            text-align: right;
-        }
-        h1, h2 {
-            color: white;
-        }
-        h2 > a {
-            color:white;
-        }
-        a {
-            color: rgb(192, 192, 0);
-        }
-        body>div {
-            padding: 20px;
-        }
         .ProtectedContent {
             display: block;
             border: dashed;
@@ -40,14 +20,24 @@
     <p>
     These links are permanent after you have accepted the <a href="{{ signup }}">User Agreement</a>.</p>
     <div class="ProtectedContent">
-    <ul>
-        <li><a href="{{prefix}}/by-redshift/">By Redshift:
-        {{prefix}}/by-redshift/
-        </a></li>
-        <li><a href="{{prefix}}/by-snapid/">By Snapshot Number:
+        <table>
+        <thead>
+        <tr>
+        <th>Method</th><th>Link</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><th> By Redshift</th>
+        <td>
+        <a href="{{prefix}}/by-redshift/">
+        {{prefix}}/by-redshift/ 
+        </a></td></tr>
+        <tr><th> By Snapshot Number</th>
+        <td><a href="{{prefix}}/by-snapid/">
         {{prefix}}/by-snapid/
-        </a></li>
-    </ul>
+        </a></td></tr>
+        </tbody>
+        </table>
     </div>
     <p>Some of the halo properties are not yet converted to the data
 release format.</p>

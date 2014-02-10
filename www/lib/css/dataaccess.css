@@ -1,0 +1,21 @@
+body {
+    max-width: 650px;
+    background: rgb(32, 32, 32);
+    color: rgb(192, 192, 192);
+}
+#footer {
+    font-size: 0.8em;
+    text-align: right;
+}
+h1, h2 {
+    color: white;
+}
+h2 > a {
+    color:white;
+}
+a {
+    color: rgb(192, 192, 48);
+}
+body>div {
+    padding: 20px;
+}
