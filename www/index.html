@@ -46,7 +46,8 @@
          display: inline;
          top: 5px;
          left: 5px;
-         width: 450px;
+         width: auto;
+         max-width: 450px;
          font-family: monospace;
          max-height: 80%;
          overflow-y: scroll;
@@ -111,14 +112,19 @@
            text-decoration: none; 
            color: yellow;
        }
+      .Button>img {
+        width: 11px;
+        height: 11px;
+        padding: 0px;
+        border: 0px;
+        margin: 0px;
+      }
       .overlayPanel>.Button {
          font-weight: bold;
          font-family: monospace;
          font-size: 12px;
          padding: 2px;
-//         width: 15px;
- //        height: 15px;
-  //       line-height: 15px;
+         height: 13px;
          text-align: center;
          border: 1px solid white;
          background-color: rgba(255, 255, 255, 0.2);
@@ -142,6 +148,7 @@
    <script language="JavaScript" type="text/javascript"> 
     var mlg;
     var mlt;    
+    var monitor;
 
     var MassMin = 0.1;
     var Nmax = 40;
@@ -193,7 +200,7 @@
             function(data) {
                 $("#interestPointDescription").html(data);
                 $("#interestPointInfo").show();
-            }
+            }, monitor
         );
         $("#interestPointOverlayCloseButton").bind("click",
             function() {
@@ -204,10 +211,9 @@
 
         mbiibrowser.AjaxLoadObject("json", objtype, currentSnapshot().snapid, id,
             function(data) {
-                console.log(data[0].bounds);
                 mlg.view(data[0].bounds);
                 if(viewswitched) viewswitched();
-            }
+            }, monitor
         );
     }
 
@@ -271,11 +277,16 @@
                 tags = newtags;
                 changeCut();
                 if(callback) callback();
-            }
+            }, monitor
         );
     }
 
     $(document).ready(function() {
+        monitor = new mbiibrowser.ProgressMonitor(
+            $('#working'),
+            $('<div/>'),
+            $('#failed'));
+
         var scontrol = $("#snapshotSelect");
         scontrol.empty();
         for(i = 0; i < snapshots.length; i ++) {
@@ -349,7 +360,13 @@
 <body>
 <div id="fb-root"></div>
 <div id="controlPanel" class="overlayPanel">
-   <div class="Button" id="about"/><a title="About">About</a></div> 
+   <div class="Button" id="about" title="About MassiveBlackII Browser">
+        <a title="About">About</a></div> 
+
+   <div class="Button" id="working" style='color:red'><img
+src="/images/loading.png" alt="Loading"/></div> 
+   <div class="Button" id="failed" style='color:red'>Failed</div> 
+
    <div style="font-weight:bold;font-size:1.1em;"> MassiveBlack II</div>
    <hr style="width:100%;"/>
     <div>
@@ -385,7 +402,7 @@ step="0.01"/>
 
 <div id="interestPointInfo" class="overlayPanel">
    <div class="Button" id="interestPointOverlayCloseButton" title="Close">Close</div>
-   <div class="Button" id="dataAccessbutton"/><a href='data/' title="Access the Raw data">DataAccess</a></div> 
+   <div class="Button" id="dataAccessbutton"><a href='data/' title="Access the Raw data">DataAccess</a></div> 
    <div style="font-weight:bold;font-size:1.1em;"> About </div>
    <hr/>
    <div id="interestPointDescription">

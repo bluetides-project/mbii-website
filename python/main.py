@@ -108,7 +108,7 @@ def do_search(snapid, type):
 
 @app.route('/<filename:path>')
 def server_static(filename):
-    return static_file(filename, root='/var/www/uwsgi/mbiiweb/www/')
+    return static_file(filename, root='../www/')
 
 #@app.route('/')
 #def server_static():

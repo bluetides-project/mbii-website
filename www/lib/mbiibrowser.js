@@ -6,7 +6,7 @@ var mbiibrowser = mbiibrowser || {};
 
     Seadragon.Config.autoHideControls = false;
     Seadragon.Config.imagePath = "lib/seadragon/img/";
-    Seadragon.Config.zoomPerclick = 1.0;
+    Seadragon.Config.zoomPerclick = 2.0;
     Seadragon.Viewer.prototype.hide = function() {
         var element = $(this.elmt);
         element.parent().css('display', 'none');
@@ -15,6 +15,47 @@ var mbiibrowser = mbiibrowser || {};
         var element = $(this.elmt);
         element.parent().css('display', 'block');
     };
+
+    ns.ProgressMonitor = function(working, done, failed) {
+        this.elmt = {
+            working: $(working),
+            done: $(done),
+            failed: $(failed),
+        };
+        this.elmt.working.hide();
+        this.elmt.done.hide();
+        this.elmt.failed.hide();
+        this.value = 0;
+    };
+
+    ns.ProgressMonitor.prototype.start = function() {
+        this.value = this.value + 1;
+        if(this.value > 0) {
+            this.elmt.done.hide();
+            this.elmt.failed.hide();
+            this.elmt.working.show();
+        }
+    };
+
+    ns.ProgressMonitor.prototype.done = function() {
+        this.value = this.value - 1;
+        if(this.value <= 0) {
+            this.elmt.done.show();
+            this.elmt.failed.hide();
+            this.elmt.working.hide();
+        }
+    };
+
+    ns.ProgressMonitor.prototype.failed = function(reason) {
+        this.value = this.value - 1;
+        this.elmt.done.hide();
+        this.elmt.working.hide();
+        if(reason) {
+            this.elmt.failed.text(reason);
+        }
+        this.elmt.failed.show();
+    };
+
 
     ns.MultiLayerTags = function(klass, callback) {
         /* when tag is clicked, call callback(this, i) */
@@ -31,7 +72,6 @@ var mbiibrowser = mbiibrowser || {};
 
     function tagClicked(event) {
         var index = event.data;
-        console.log("clicked on tag " + index);
         this.callback(this, index);
         event.preventDefault();
     }
@@ -85,7 +125,6 @@ var mbiibrowser = mbiibrowser || {};
     };
 
     ns.Scale.prototype.redraw = function () {
-        console.log("" + this.width);
         this.element.css('width', sprintf('%dpx', this.width));
         this.element.css("left", (this.rootElement.width() - this.width) / 2);
     }
@@ -169,12 +208,13 @@ var mbiibrowser = mbiibrowser || {};
         }
     };
     ns.MultiLayerGigapan.prototype.view = function(bounds) {
-        this.bounds = new Seadragon.Rect(bounds.x, bounds.y, bounds.width, bounds.height)
+        var bounds = new Seadragon.Rect(bounds.x, bounds.y, bounds.width + bounds.x * 0.0001, bounds.height + bounds.y * 0.0001);
         var current = this.viewers[this.currentLayer];
         if (current.viewport) {
-            current.viewport.fitBounds(this.bounds, false);
+            current.viewport.fitBounds(current.viewport.getBounds(), true);
+            current.viewport.fitBounds(bounds, false);
         }
-        this.saveBounds();
+        this.bounds = bounds;
     };
 
     ns.MultiLayerGigapan.prototype.reopen = function(layers, callback) {
@@ -242,7 +282,6 @@ var mbiibrowser = mbiibrowser || {};
     }
 
     function viewerOpened(viewer) {
-        console.log("viewerOpened " + viewer.layer.index);
         addTags(this.tags[0], viewer.drawer);
         if(viewer.layer.index != this.currentLayer) {
             viewer.hide();
@@ -252,14 +291,12 @@ var mbiibrowser = mbiibrowser || {};
         }
         this.openedViewers = this.openedViewers + 1;
         if(this.openedViewers == this.layers.length) {
-            console.log('emitting callback ' + this.openedViewers == this.layers.length);
             this.openedCallback(this);
         } else {
         }
     }
 
     function animationHandler(viewer) {
-        console.log("animation");
         this.scale.fit(viewer);
     }
 
@@ -269,12 +306,10 @@ var mbiibrowser = mbiibrowser || {};
         viewer = new Seadragon.Viewer(layer.element[0]);
         viewer.layer = layer;
         this.viewers.push(viewer);
-        console.log("createViewer " + i);
         viewer.addEventListener("open", viewerOpened.bind(this));
         viewer.addEventListener("animation", animationHandler.bind(this));
         viewer.addEventListener("animationfinish", 
             (function(viewer) {
-            console.log("animation finish");
             this.bounds = viewer.viewport.getBounds();}
             ).bind(this)
         );
@@ -297,7 +332,6 @@ var mbiibrowser = mbiibrowser || {};
         this.drawTags();
     }
     function openTiles(viewer, layer) {
-        console.log("layer: " + layer.element.css('display'));
         viewer.setDashboardEnabled(true);
         //
         // compute the index of the tile server for this gigapan 
@@ -320,33 +354,35 @@ var mbiibrowser = mbiibrowser || {};
         viewer.openTileSource(gigapanSource);
     }
 
-    ns.AjaxLoadObject = function(type, objtype, snapid, id, callback) {
+    ns.AjaxLoadObject = function(type, objtype, snapid, id, callback, monitor) {
         /* objtype shall be subhalo or group 
  *         type shall be json or html*/
         var source = sprintf("%s/%03d/%s/%d", type, snapid, objtype, id);
         /* hack XXX*/
         if (type == "html") type = "text";
-        console.log("type");
-        console.log(type);
+        monitor.start();
         $.ajax({
                 dataType: type,
                 url: source, 
                 mimeType: "application/" + type,
                 type: "get"})
         .done(
-             function(data) { callback(data); }
-         )
+            function(data) { callback(data); 
+                monitor.done();
+            }
+        )
         .error(
-                 function(a, b, c) {
-                     console.log('Ajax Failed');
-                     console.log(a);
-                     console.log(b);
-                     console.log(c);
-                 }
-         );
+            function(a, b, c) {
+                console.log('Ajax Failed');
+                console.log(a);
+                console.log(b);
+                console.log(c);
+                monitor.failed();
+            }
+        );
     };
 
-    ns.AjaxLoadTags = function(snapid, bounds, Nmax, MassMin, callback) {
+    ns.AjaxLoadTags = function(snapid, bounds, Nmax, MassMin, callback, monitor) {
         var source = sprintf("search/%03d/subhalo", snapid);
         if (! bounds) {
             bounds = {
@@ -356,6 +392,7 @@ var mbiibrowser = mbiibrowser || {};
                 width: 10 
             };
         }
+        monitor.start();
         $.ajax({
                 dataType: "json",
                 url: source, 
@@ -367,16 +404,17 @@ var mbiibrowser = mbiibrowser || {};
                         Nmax: Nmax}
                       })
         .done(
-             function(data) { callback(data); }
+            function(data) { callback(data); monitor.done(); }
          )
-	.error(
-             function(a, b, c) {
-                 console.log('Ajax Failed');
-                 console.log(a);
-                 console.log(b);
-                 console.log(c);
-             }
-         );
+        .error(
+            function(a, b, c) {
+                monitor.failed();
+                console.log('Ajax Failed');
+                console.log(a);
+                console.log(b);
+                console.log(c);
+            }
+        );
     };
 
 })(mbiibrowser);
