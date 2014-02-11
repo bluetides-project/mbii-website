@@ -1,11 +1,11 @@
 % for gid, group in zip(id, groups):
     <h2> Group: {{'%05d' % gid}}  </h2>
     <table>
-    <tr><td>Mass</td><td> {{'%.5g' % (group['mass'] * 1e10)}} M_sun / h </td></tr> 
-    <tr><td>X</td><td> {{'%.5g' % group['pos'][0] }} Kpc / h</td></tr>
-    <tr><td>Y</td><td> {{'%.5g' % group['pos'][1] }} Kpc / h</td></tr>
-    <tr><td>Z</td><td> {{'%.5g' % group['pos'][2] }} Kpc / h</td></tr>
-    <tr><td>Nsubhalo</td><td> {{group['Nsubhalo'] }} </td></tr>
-    <tr><td>first</td><td> {{group['firstsubhalo'] }} </td></tr>
+    <tr><th>Mass</th><td> {{'%.5g' % (group['mass'] * 1e10)}}</td><th> M_sun / h </th></tr> 
+    <tr><th>X</th><td> {{'%.5g' % group['pos'][0] }}</td><th> Kpc / h</th></tr>
+    <tr><th>Y</th><td> {{'%.5g' % group['pos'][1] }}</td><th> Kpc / h</th></tr>
+    <tr><th>Z</th><td> {{'%.5g' % group['pos'][2] }}</td><th> Kpc / h</th></tr>
+    <tr><th>Nsubhalo</th><td> {{group['Nsubhalo'] }}</td><th> </th></tr>
+    <tr><th>first</th><td> {{group['firstsubhalo'] }}</td><th> </th></tr>
     </table>
 % end

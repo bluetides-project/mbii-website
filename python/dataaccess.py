@@ -2,10 +2,11 @@ from bottle import route, run, abort, view, post, request, response, static_file
 import os.path
 import numpy
 import hashlib
+import dtype
 
 app = application = Bottle()
 
-dtype = numpy.dtype([
+userdtype = numpy.dtype([
     ('email', 'S256'),
     ('ip', 'S20'),
     ('count', 'i8')])
@@ -27,10 +28,10 @@ def makeurl(path):
 
 def loadusers():
     try:
-        users = numpy.loadtxt(os.path.join(ROOT, 'datausers.txt'), dtype=dtype, ndmin=1)
+        users = numpy.loadtxt(os.path.join(ROOT, 'datausers.txt'), dtype=userdtype, ndmin=1)
         return users
     except:
-        return numpy.empty(0, dtype)
+        return numpy.empty(0, userdtype)
 
 def saveusers(users):
     users.sort(order=['email'])
@@ -81,7 +82,7 @@ def signup():
         if not verify:
             redirect(makeurl('denied/' + email))
             return 
-        users = numpy.append(users, numpy.empty(1, dtype=dtype))
+        users = numpy.append(users, numpy.empty(1, dtype=userdtype))
         
         users[-1]['email'] = email
         users[-1]['ip'] = request['REMOTE_ADDR']
@@ -102,7 +103,8 @@ def access(email):
     if auth(email):
         return dict(email=email,
             prefix=makeurl('d/' + email),
-            signup=makeurl('signup'))
+            signup=makeurl('signup'), 
+            fields=dtype.subhalo.names)
     else:
         redirect(makeurl('denied/' + email))
         return

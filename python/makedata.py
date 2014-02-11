@@ -4,6 +4,7 @@ import readsubhalo
 import os
 import os.path
 from dirarray import dirarray
+from dtype import subhalo as subhalodtype
 
 boxsize = 100000.0
 M = numpy.matrix("2,1,1.;1,4,-2 ; 1,0,1").T
@@ -22,7 +23,7 @@ ROOT = '../MB-IIa'
 def main():
     print 'making data to', output
     snap = readsubhalo.SnapDir(snapid, ROOT)
-
+    update = len(argv) > 2 and argv[2] == "update"
     try: 
         os.mkdir(output)
     except OSError:
@@ -34,8 +35,8 @@ def main():
     metadata['redshift'] = snap.redshift
     numpy.savez(os.path.join(output, 'metadata.npz'), metadata=metadata)
 
-    makegroup(snap, update=True)
-    makesubhalo(snap, update=True)
+    makegroup(snap, update=update)
+    makesubhalo(snap, update=update)
 
 def makegroup(snap, update=False):
     g = snap.readgroup()
@@ -68,31 +69,19 @@ def makesubhalo(snap, update=False):
     sub = snap.load('subhalo', 'tab')
     g = snap.readgroup()
     type = snap.load('subhalo', 'type')
+    sfr = snap.load('subhalo', 'sfr')
+    bhmass = snap.load('subhalo', 'bhmass')
+    bhmdot = snap.load('subhalo', 'bhmdot')
+
     mask = ~numpy.isnan(sub['mass'])
     outarray = dirarray(os.path.join(output, 'subhalo'), 
-        dtype=[
-            ('x', 'f4'), 
-            ('y', 'f4'), 
-            ('pos', ('f4', 3)), 
-            ('vel', ('f4', 3)), 
-            ('size', 'f4'),
-            ('groupid', 'u4'),
-            ('iscentral', '?'),
-            ('mass', 'f4'),
-            ('massbytype', ('f4', 6)), 
-            ('lenbytype', ('u4', 6)), 
-            ('vdisp', 'f4'),  
-            ('vcirc', 'f4'),  
-            ('rcirc', 'f4'),
-            ('SDSS.i', 'f4'), ('SDSS.r', 'f4'), ('SDSS.g', 'f4'), ('SDSS.u', 'f4'), ('SDSS.z', 'f4'),
-            ('FAKE.1500', 'f4'), ('FAKE.2000', 'f4'), ('FAKE.2500', 'f4'), 
-            ('FAKE.Un', 'f4'), ('FAKE.V', 'f4'), ('FAKE.Vn', 'f4'), ('FAKE.Vw', 'f4'),
-            ('GALEX.FUV', 'f4'), ('GALEX.NUV', 'f4'),
-            ('UKIRT.WFCAM.H', 'f4'), ('UKIRT.WFCAM.J', 'f4'), ('UKIRT.WFCAM.K', 'f4'), ('UKIRT.WFCAM.Y', 'f4'),
-            ], shape=mask.sum(), mode='r+' if update else 'w+')
+        dtype=subhalodtype, shape=mask.sum(), mode='r+' if update else 'w+')
 
-    outarray['vel'] = sub['vel'][mask]
+    outarray['sfr'] = sfr[mask]
+    outarray['bhmass'] = bhmass[mask]
+    outarray['bhmdot'] = bhmdot[mask]
     if not update:
+        outarray['vel'] = sub['vel'][mask]
         x, y, z = numpy.float32(sub['pos'].T)
         x = x[mask]
         y = y[mask]

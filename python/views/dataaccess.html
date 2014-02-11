@@ -10,7 +10,45 @@
             padding: 10px;
             margin: 10px;
         } 
+        #lftp pre {
+            background: black;
+            padding: 10px;
+        }
+        #lftp span {
+            min-width: 10%;
+            display: inline-block;
+        }
+        #lftp div {
+            line-height: 1.5;
+            margin: 10px;
+        }
+        #lftp {
+            margin : 10px;
+            border: solid;
+            padding: 10px;
+        }
     </style>
+    <script language="JavaScript" type="text/javascript" src="/lib/jquery/jquery-1.10.2.js"></script>
+    <script language="JavaScript" type="text/javascript" src="/lib/sprintf.js"></script>
+    <script language="JavaScript" type="text/javascript">
+        function updatelftp() {
+            var checked = $('#lftpoptions input:checked');
+            console.log(checked);
+            var foo = "";
+            var i;
+            for(i = 0; i < checked.length; i++) {
+                foo = foo + "    -i " + checked[i].value + " \\\n"
+            };
+            var source = $('#lftpsources input:checked');
+            for(i = 0; i < source.length; i++) { 
+                var text = "lftp -c mirror --include-glob '*.npz' \\\n" 
+                    + foo
+                    + "http://mbii.phys.cmu.edu{{prefix}}/" + source[i].value + "/ MB-II\n";
+                $("#lftpcmd").text(text);
+            }
+        }
+        $(document).ready(updatelftp);
+    </script>
 </head>
 <body>
 <h1>MassiveBlack II Simulation </h1>
@@ -49,6 +87,28 @@ Please let us know.</p>
     <p> A comprehensive guide to reading the files is at 
         <a href="README.txt">README.txt</a>.
     </p>
+    <div id="lftp">
+    <div>
+    <div>To download with <a href="http://lftp.yar.ru">lftp</a></div>
+    <pre id="lftpcmd"></pre>
+    </div>
+    <div id="lftpsources">
+        <div>Snapshot numbering</div>
+        <input name="sources" value="by-redshift" type="radio" onchange="updatelftp();"/>
+        <label for="by-redshift">By Redshift</label>
+        <input name="sources" value="by-snapid" type="radio" onchange="updatelftp();"/>
+        <label for="by-snapid">By Snapshot Number</label>
+    </div>
+    <div id="lftpoptions">
+        <div>Download the following fields</div>
+% for field in fields:
+    <span>
+    <input id="comp{{field}}" value="{{field}}" type="checkbox" onchange="updatelftp();"/>
+    <label for="comp{{field}}">{{field}}</label>
+    </span>
+% end 
+    </div>
+    </div>
 </div>
 <!--
 <div>

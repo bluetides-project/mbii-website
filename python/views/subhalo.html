@@ -1,23 +1,35 @@
 % for gid, sub in zip(id, subhalos):
     <h2> Subhalo: {{gid}} </h2>
     <table>
-    <tr><td>Group</td><td> {{'%.5g' % sub['groupid'] }} </td></tr> 
-    <tr><td>IsCentral</td><td> {{'%.5g' % sub['iscentral'] }} </td></tr> 
-    <tr><td>Mass</td><td> {{'%.5g' % (sub['mass'] * 1e10)}} M_sun / h </td></tr> 
-    <tr><td>Gas </td><td> {{'%.5g' % (sub['massbytype'][0] * 1e10) }} M_sun / h</td></tr> 
-    <tr><td>Dark Matter Mass</td><td> {{'%.5g' % (sub['massbytype'][1] * 1e10)}} M_sun / h </td></tr> 
-    <tr><td>Stellar Mass</td><td> {{'%.5g' % (sub['massbytype'][4] * 1e10) }} M_sun / h </td></tr> 
-    <tr><td>Blackhole Mass</td><td> {{'%.5g' % (sub['massbytype'][5] * 1e10) }} M_sun / h</td></tr> 
-    <tr><td>Rcirc</td><td> {{'%.5g' % sub['rcirc'] }} Kpc / h</td></tr> 
-    <tr><td>Vcirc</td><td> {{'%.5g' % sub['vcirc'] }} km / sec</td></tr> 
-    <tr><td>Vdisp</td><td> {{'%.5g' % sub['vdisp'] }} km / sec</td></tr> 
-    <tr><td>X</td><td> {{'%.5g' % sub['pos'][0] }} Kpc / h</td></tr>
-    <tr><td>Y</td><td> {{'%.5g' % sub['pos'][1] }} Kpc / h </td></tr>
-    <tr><td>Z</td><td> {{'%.5g' % sub['pos'][2] }} Kpc / h </td></tr>
-    <tr><td>SDSS.i</td><td> {{'%.5g' % (sub['SDSS.i'] * 1e28) }} ergs / (s * HZ) </td></tr>
-    <tr><td>SDDD.r</td><td> {{'%.5g' % (sub['SDSS.r'] * 1e28) }} ergs / (s * HZ) </td></tr>
-    <tr><td>SDDD.g</td><td> {{'%.5g' % (sub['SDSS.g'] * 1e28) }} ergs / (s * HZ) </td></tr>
-    <tr><td>SDDD.u</td><td> {{'%.5g' % (sub['SDSS.u'] * 1e28) }} ergs / (s * HZ) </td></tr>
-    <tr><td>SDDD.z</td><td> {{'%.5g' % (sub['SDSS.z'] * 1e28) }} ergs / (s * HZ) </td></tr>
+    <tr><th>Group</th><td> {{'%.5g' % sub['groupid'] }} </td> <th></th></tr> 
+    <tr><th>IsCentral</th><td> {{'%.5g' % sub['iscentral'] }} </td><th></th></tr> 
+    <tr><th>Mass</th><td> {{'%.5g' % (sub['mass'] * 1e10)}}</td><th> M_sun / h </th></tr> 
+    <tr><th>Gas </th><td> {{'%.5g' % (sub['massbytype'][0] * 1e10) }} </td><th>M_sun / h</th></tr> 
+    <tr><th>Dark Matter </th><td> 
+{{'%.5g' % (sub['massbytype'][1] * 1e10)}}</td><th> M_sun / h </th></tr> 
+    <tr><th>Stellar </th><td> {{'%.5g' % (sub['massbytype'][4] * 1e10) }}
+</td><th>M_sun / h </th></tr> 
+    <tr><th>Blackhole </th><td> {{'%.5g' % (sub['bhmass'] * 1e10) }}
+</td><th>M_sun / h</th></tr> 
+    <tr><th>BH Accr. Rate</th><td> 
+{{'%.5g' % (sub['bhmdot'] * 10.2) }} </td><th>M_sun / year </th></tr> 
+    <tr><th>S-F. Rate</th><td> 
+{{'%.5g' % (sub['sfr']) }} </td><th>M_sun / year </th></tr> 
+    <tr><th>Rcirc</th><td> {{'%.5g' % sub['rcirc'] }} </td><th>Kpc / h</th></tr> 
+    <tr><th>Vcirc</th><td> {{'%.5g' % sub['vcirc'] }} </td><th>km / sec</th></tr> 
+    <tr><th>Vdisp</th><td> {{'%.5g' % sub['vdisp'] }} </td><th>km / sec</th></tr> 
+    <tr><th>X</th><td> {{'%.5g' % sub['pos'][0] }} </td><th>Kpc / h</th></tr>
+    <tr><th>Y</th><td> {{'%.5g' % sub['pos'][1] }} </td><th>Kpc / h </th></tr>
+    <tr><th>Z</th><td> {{'%.5g' % sub['pos'][2] }} </td><th>Kpc / h </th></tr>
+    <tr><th>SDSS.i</th><td> {{'%.5g' % (sub['SDSS.i'] * 1e28) }} </td><th>ergs /
+h </th></tr>
+    <tr><th>SDDD.r</th><td> {{'%.5g' % (sub['SDSS.r'] * 1e28) }} </td><th>ergs /
+h </th></tr>
+    <tr><th>SDDD.g</th><td> {{'%.5g' % (sub['SDSS.g'] * 1e28) }} </td><th>ergs /
+h </th></tr>
+    <tr><th>SDDD.u</th><td> {{'%.5g' % (sub['SDSS.u'] * 1e28) }} </td><th>ergs /
+h </th></tr>
+    <tr><th>SDDD.z</th><td> {{'%.5g' % (sub['SDSS.z'] * 1e28) }} </td><th>ergs /
+h </th></tr>
     </table>
 % end

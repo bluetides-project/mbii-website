@@ -24,7 +24,14 @@ Accessing MassiveBlack-II data.
 
 3. You can mirror the data to your own local server with:
 
-   lftp -c mirror http://mbii.phys.cmu.edu/data/by-redshift/ MB-II
+   lftp -c mirror --include-glob '*.npz' 
+      -i <name1> \
+      -i <name2> \
+      [-i <name3> ... ] \
+      http://mbii.phys.cmu.edu/data/d/<your email here>/by-redshift/ MB-II
+
+
+   where name1, name2 are describe in the next list.
 
 3. The easiest way to use snapshots is to access them with the provided
     dirarray.py python module.
@@ -54,7 +61,10 @@ Accessing MassiveBlack-II data.
     ('groupid', 'u4'),   # group that owns this subhalo
     ('iscentral', '?'),  # if the mass >= 40% of the host group
     ('mass', 'f4'),      # total mass 1e10 Msun/h
-    ('massbytype', ('f4', 6)),  # mass per species 1e10 Msun/h
+    ('bhmass', 'f4'),      # total blackhole mass 1e10 Msun/h 
+    ('bhmdot', 'f4'),      # total blackhole accretion rate 1e10 Msun/ 980 Myear
+    ('sfr', 'f4'),      # total star formation rate Msun/ year
+    ('massbytype', ('f4', 6)),  # mass per species 1e10 Msun/h (0=gas, 1=dm, 4=star)
     ('lenbytype', ('u4', 6)),   # number of particles per species
     ('vdisp', 'f4'),    # velocity dispersion km/s
     ('vcirc', 'f4'),    # max circular velocity in km/s

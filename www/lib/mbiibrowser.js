@@ -6,7 +6,7 @@ var mbiibrowser = mbiibrowser || {};
 
     Seadragon.Config.autoHideControls = false;
     Seadragon.Config.imagePath = "lib/seadragon/img/";
-    Seadragon.Config.zoomPerclick = 2.0;
+    Seadragon.Config.zoomPerClick = 1.0;
     Seadragon.Viewer.prototype.hide = function() {
         var element = $(this.elmt);
         element.parent().css('display', 'none');
