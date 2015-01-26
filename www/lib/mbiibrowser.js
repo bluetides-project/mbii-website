@@ -3,10 +3,14 @@ var mbiibrowser = mbiibrowser || {};
 (function(ns) {
     var EP = "MBII";
     Seadragon.Config.imageLoaderLimit = 6;
+    Seadragon.Config.wrapHorizontal = true;
+    Seadragon.Config.wrapVertical = true;
 
+    Seadragon.Config.animationTime = 4;
     Seadragon.Config.autoHideControls = false;
     Seadragon.Config.imagePath = "lib/seadragon/img/";
-    Seadragon.Config.zoomPerClick = 1.0;
+    Seadragon.Config.zoomPerClick = 1.5;
+    Seadragon.Config.maxZoomPixelRatio = 8;
     Seadragon.Viewer.prototype.hide = function() {
         var element = $(this.elmt);
         element.parent().css('display', 'none');
@@ -357,7 +361,12 @@ var mbiibrowser = mbiibrowser || {};
     ns.AjaxLoadObject = function(type, objtype, snapid, id, callback, monitor) {
         /* objtype shall be subhalo or group 
  *         type shall be json or html*/
-        var source = sprintf("%s/%03d/%s/%d", type, snapid, objtype, id);
+        var source;
+        if (objtype == "object") {
+            source = sprintf("%s/%03d/group/%d/subhalo/%d", type, snapid, id[0], id[1]);
+        } else {
+            source = sprintf("%s/%03d/%s/%d", type, snapid, objtype, id);
+        }
         /* hack XXX*/
         if (type == "html") type = "text";
         monitor.start();

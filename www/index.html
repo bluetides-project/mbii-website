@@ -215,16 +215,55 @@
         );
     }
 
+    var demoing = false;
+    function triggerDemo() {
+        var control = $("#demoButton");
+        function demo() {
+            id = Math.floor(Math.random() * 1000);
+            viewObject(id, 'group',
+                function() {
+                    redoSearch(function() { 
+                        highlightObjects(id, 'group');
+                        if(demoing)
+                            window.setTimeout(demo, 10000);
+                    });
+                }
+            );
+        }
+        if(demoing) {
+            control.prop('value', "Demo");
+            demoing = false;
+        } else {
+            control.prop('value', "Stop Demo");
+            demoing = true;
+            window.setTimeout(demo);
+        }
+    }
+
     function jumptoGroup() {
         var control = $("#GroupID");
-        var id = parseInt(control.val());
-        viewObject(id, 'group',
+        gid = parseInt(control.val());
+        var control = $("#SubHaloID");
+        var objtype;
+        var id;
+        if(control.val().length > 0) {
+            objtype = "object";
+            sid = parseInt(control.val());
+            id = [gid, sid] ;
+        } else {
+            objtype = "group";
+            id = gid;
+        }
+        viewObject(id, objtype,
             function() {
-                redoSearch(function() { highlightObjects(id, 'group');});
+                redoSearch(function() { 
+                    highlightObjects(gid, 'group');
+                });
             }
         );
     }
     
+
     function changeSnapshot() {
         var snapshot = currentSnapshot()
         var layerselect = $("#snapshotLayerSelect");
@@ -330,6 +369,10 @@
                     window.setTimeout(jumptoGroup);
                 });
 
+        $("#demoButton").click(function() {
+                    window.setTimeout(triggerDemo);
+                });
+
         units = [
             {str: 'pc/h', factor:0.001},
             {str: 'Kpc/h', factor:1.0},
@@ -377,11 +420,13 @@ src="/images/loading.png" alt="Loading"/></div>
     <select id="snapshotLayerSelect">
     <option value="0" selected></option>
     </select>
+    <input id="demoButton" type="button" value="Demo"/> 
     </div>
 
     <div> 
     <input id="jumptoGroup" type="button" value="Jump"/> 
-to group <input id="GroupID" type="text" value="0" size="6"/>
+    <input id="GroupID" type="text" value="0" size="6"/>
+    <input id="SubHaloID" type="text" value="0" size="6"/>
     </div>
 
     <div>
