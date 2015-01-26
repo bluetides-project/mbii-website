@@ -8,7 +8,7 @@ app = application = Bottle()
 
 ROOT = '/var/www/uwsgi/mbiiweb/internal'
 BOXSIZE = numpy.array([244948.94607753,  428174.36999344 ])
-
+PAGESIZE = 25
 def getmeta(snapid):
     meta = numpy.load(os.path.join(ROOT, '%03d' % snapid, 'metadata.npz'))
     return meta['metadata']
@@ -22,10 +22,39 @@ def getsubhalo(snapid):
 def hello():
     return "Hello World!"
 
-@app.route('/snap/<snapid:int>')
+@app.route('/html/<snapid:int>')
+@view('snapshot.html')
 def snap(snapid):
     meta = getmeta(snapid)
-    return dict(redshift=float(meta['redshift']))
+    group = getgroup(snapid)
+    subhalo = getsubhalo(snapid)
+    
+    return dict(redshift=float(meta['redshift']),
+        snapid=snapid,
+        Ngroup=len(group), Nsubhalo=len(subhalo))
+
+@app.route('/<mime:re:(html|json)>/<snapid:int>/subhalo/page/<pageid:int>')
+def snap(mime, snapid, pageid):
+    meta = getmeta(snapid)
+    group = getgroup(snapid)
+    subhalo = getsubhalo(snapid)
+    start = pageid * PAGESIZE
+    end = start + PAGESIZE
+    s = slice(start, end)
+    sub = subhalo[s]
+    id = range(*s.indices(len(subhalo)))
+    return template('subhalo.%s' % mime, subhalos=sub, id=id)
+
+@app.route('/<mime:re:(html|json)>/<snapid:int>/group/page/<pageid:int>')
+def snap(mime, snapid, pageid):
+    meta = getmeta(snapid)
+    group = getgroup(snapid)
+    start = pageid * PAGESIZE
+    end = start + PAGESIZE
+    s = slice(start, end)
+    sub = group[s]
+    id = range(*s.indices(len(group)))
+    return template('group.%s' % mime, groups=sub, id=id)
 
 @app.route('/<mime:re:(html|json)>/<snapid:int>/group/<gid:int>')
 def group(mime, snapid, gid):
@@ -49,13 +78,13 @@ def subhaloingroup(mime, snapid, gid, sid):
     return template('subhalo.%s' % mime, subhalos=[sel], id=[first + sid])
 
 @app.route('/<mime:re:(html|json)>/<snapid:int>/subhalo/<sid:int>')
-@view('subhalo.html')
 def subhalo(mime, snapid, sid):
     tab = getsubhalo(snapid)
     if sid >= len(tab) or sid < 0:
         return abort(404, "Subhalo %d not found in snapid %d" % (sid,
 snapid))
     return template('subhalo.%s' % mime, subhalos=[tab[sid]], id=[sid])
+
 
 @app.get('/search/<snapid:int>/<type:re:(group|subhalo)>')
 @view('search.html')

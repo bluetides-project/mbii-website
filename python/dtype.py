@@ -22,3 +22,22 @@ subhalo = numpy.dtype([
             ('GALEX.FUV', 'f4'), ('GALEX.NUV', 'f4'),
             ('UKIRT.WFCAM.H', 'f4'), ('UKIRT.WFCAM.J', 'f4'), ('UKIRT.WFCAM.K', 'f4'), ('UKIRT.WFCAM.Y', 'f4'),
             ])
+
+subhalodescr = {
+    'x':" visualization x coordinate",
+    'y':" visualization y coordinate",
+    'size':" visualization size",
+    'pos':" position in the simulation Kpc/h",
+    'vel':" peculiar velocity in the simulation km/s",
+    'groupid':" group that owns this subhalo",
+    'iscentral':" if the mass >= 40% of the host group",
+    'mass':" total mass 1e10 Msun/h",
+    'bhmass':" total blackhole mass 1e10 Msun/h ",
+    'bhmdot':" total blackhole accretion rate 1e10 Msun/ 980 Myear",
+    'sfr':" total star formation rate Msun/ year",
+    'massbytype':" mass per species 1e10 Msun/h (0=gas, 1=dm, 4=star)",
+    'lenbytype':" number of particles per species",
+    'vdisp':" velocity dispersion km/s",
+    'vcirc':" max circular velocity in km/s",
+    'rcirc':" radius of max circular velocity in km/s",
+}

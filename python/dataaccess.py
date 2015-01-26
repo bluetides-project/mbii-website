@@ -35,8 +35,10 @@ def loadusers():
 
 def saveusers(users):
     users.sort(order=['email'])
-    numpy.savetxt(os.path.join(ROOT, 'datausers.txt'), users, fmt='%s %s %d')
-
+    try:
+        numpy.savetxt(os.path.join(ROOT, 'datausers.txt'), users, fmt='%s %s %d')
+    except:
+        pass
 def finduser(users, email):
     print users
     print email
@@ -96,15 +98,24 @@ def signup():
         signup=makeurl('signup'))
     
 
-@app.get('/d/<email:re:[^/]*>/')
 @app.get('/d/<email:re:[^/]*>')
+def access(email):
+    redirect(makeurl('d/' + email + '/'))
+
+@app.get('/d/<email:re:[^/]*>/')
 @view('dataaccess.html')
 def access(email):
     if auth(email):
+        redshifts = numpy.loadtxt(ROOT + '/../internal/snapshots.txt', dtype=[
+            ('snapid', 'S8'), ('redshift', 'S8')])
+        redshifts.sort(order='snapid')
         return dict(email=email,
             prefix=makeurl('d/' + email),
             signup=makeurl('signup'), 
-            fields=dtype.subhalo.names)
+            fields=[(f, str(dtype.subhalo[f]))
+                for f in dtype.subhalo.names], 
+            descr=dtype.subhalodescr,
+            snapshots=redshifts)
     else:
         redirect(makeurl('denied/' + email))
         return
@@ -118,6 +129,10 @@ def feed(email, path):
     else:
         redirect(makeurl('denied/' + email))
         return
+
+@app.route('/<filename:path>')
+def server_static(filename):
+    return static_file(filename, root='../www/')
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=8080, debug=True)

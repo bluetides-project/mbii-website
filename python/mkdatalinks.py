@@ -17,14 +17,27 @@ def symlinkf(src, dest):
     os.symlink(src, dest);
 
 def main():
-    for dir in glob.glob(os.path.join(ROOT, '[0-9][0-9][0-9]')):
-        basename = os.path.basename(dir)
-        dest = os.path.join(ROOT, 'by-snapid', basename);
-        src = os.path.join('..', basename)
-        symlinkf(src, dest)
+    dirs = list(glob.glob(os.path.join(ROOT, '[0-9][0-9][0-9]')))
+    dirs = sorted(dirs) 
+    basenames = [os.path.basename(dir) for dir in dirs]
+    redshifts = ['%05.2f' % getmeta(int(basename))['redshift'] 
+            for basename in basenames]
+    unique='abcdefghijk'
+    redshifts = [
+        redshift
+        if redshifts.count(redshift) == 1 else 
+        redshift + unique[redshifts[:i].count(redshift)]
+        for i, redshift in enumerate(redshifts)
+        ]
+   
+    with file(os.path.join(ROOT, 'snapshots.txt'), 'w') as logfile:
+        for basename, redshift in zip(basenames, redshifts):
+            dest = os.path.join(ROOT, 'by-snapid', basename);
+            src = os.path.join('..', basename)
+            symlinkf(src, dest)
 
-        meta = getmeta(int(basename))
-        dest = os.path.join(ROOT, 'by-redshift', '%05.2f' % meta['redshift']);
-        symlinkf(src, dest)
-        
+            dest = os.path.join(ROOT, 'by-redshift', redshift);
+            symlinkf(src, dest)
+            logfile.write("%s %s\n" % (basename, redshift)) 
+
 main() 

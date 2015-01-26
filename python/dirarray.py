@@ -28,16 +28,20 @@ class dirarray(object):
         self.migrate(path, shape, dtype)
 
     def migrate(self, path, shape, dtype):
+        """ migrate the scheme in path to the given dtype and shape"""
         metafile = os.path.join(path, '_meta.npz')
         dummy = numpy.empty((), dtype=dtype)
         numpy.savez(metafile, dummy=dummy, shape=shape)
         self._open(path)
 
+    def filename(self, key):
+        return os.path.join(self.path, key)
+
     def _openfield(self, key, mode, shape):
         if key not in self.dtype.names:
             raise KeyError("%s not found in dtype" % key)
         # create a new file in r+ mode if it doesn't exist.
-        path = os.path.join(self.path, key)
+        path = self.filename(key)
         if not os.path.exists(path) and mode == 'r+':
             mode = 'w+'
 

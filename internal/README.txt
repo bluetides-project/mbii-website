@@ -71,6 +71,8 @@ Accessing MassiveBlack-II data.
     ('rcirc', 'f4'),    # radius of max circular velocity in km/s
 
     # These are Rest Frame filter luminosities in 1e28 ergs/Hz/s/h:
+    # currently these variables are from stellar population synthesis. 
+    # AGN is not included.
 
     ('SDSS.i', 'f4'), ('SDSS.r', 'f4'), ('SDSS.g', 'f4'), ('SDSS.u', 'f4'), ('SDSS.z', 'f4'),
     ('GALEX.FUV', 'f4'), ('GALEX.NUV', 'f4'),
