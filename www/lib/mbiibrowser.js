@@ -3,8 +3,8 @@ var mbiibrowser = mbiibrowser || {};
 (function(ns) {
     var EP = "MBII";
     Seadragon.Config.imageLoaderLimit = 6;
-    Seadragon.Config.wrapHorizontal = true;
-    Seadragon.Config.wrapVertical = true;
+//    Seadragon.Config.wrapHorizontal = true;
+//    Seadragon.Config.wrapVertical = true;
 
     Seadragon.Config.animationTime = 4;
     Seadragon.Config.autoHideControls = false;
